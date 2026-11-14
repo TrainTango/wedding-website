@@ -1387,7 +1387,7 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
         <p class="rs-hint">Just as it appears on your invitation.</p>
         <button class="btn" type="submit" id="rsFindBtn">Find my invitation</button>
         <p class="rs-msg" id="rsFindMsg" role="status"></p>
-        <p class="rs-demo" id="rsDemo" hidden>Preview: try <b>Alex Example</b>. Nothing is saved.</p>
+        <p class="rs-demo" id="rsDemo" hidden>Preview: <b>Alex Example</b> is a test couple. Nothing is saved for them.</p>
       </form>
 
       <form class="rs-step" id="rsReply" hidden novalidate>
@@ -1683,7 +1683,7 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
 <script>
 /* RSVP: finds a guest by name, replies for the household, writes to the guest list sheet. */
 (function(){
-  var ENDPOINT = ''; // the Apps Script web app URL (ends in /exec); see rsvp/README.md
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbzC7J_zaom5HoUE9oHMd0Q_sfm1y_22162r0quXK1yfWSrhfKj2I_OMs306WR1gWBzwuA/exec'; // Apps Script web app; see rsvp/README.md
   var CLOSES = Date.parse('2027-03-01T23:59:59Z'), WEDDING = Date.parse('2027-09-18T14:00:00+01:00');
   var LIVE = /hannahandlawrence\./.test(location.hostname);
   var DEMO = !ENDPOINT && !LIVE;
@@ -1711,9 +1711,19 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
       }
     }, 650); });
   }
+  function isDemo(req){
+    if(DEMO || req.token==='demo') return true;
+    var n=function(s){return String(s||'').toLowerCase().replace(/[^a-z]/g,'')};
+    return !LIVE && req.action==='find' && n(req.last)==='example';
+  }
   function call(req){
-    if(DEMO) return demo(req);
-    return fetch(ENDPOINT,{method:'POST',body:JSON.stringify(req)}).then(function(r){ return r.json(); });
+    if(isDemo(req)) return demo(req);
+    return fetch(ENDPOINT,{method:'POST',body:JSON.stringify(req)}).then(function(r){ return r.json(); })
+      .catch(function(err){ if(!LIVE) err.preview=true; throw err; });
+  }
+  function failText(err){
+    return err && err.preview ? "This preview can't reach the guest list. It will work on hannahandlawrence.com, or try Alex Example here."
+      : 'Something went wrong on our side. Please try again in a moment.';
   }
 
   /* ---- step 1: find ---- */
@@ -1723,7 +1733,7 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
   }
   function start(){
     if(!ENDPOINT && LIVE || Date.now()>CLOSES){ $('rsClosedText').textContent=closedText(); show('rsClosed'); return; }
-    $('rsDemo').hidden=!DEMO; show('rsFind');
+    $('rsDemo').hidden=LIVE; show('rsFind');
   }
   $('rsFind').addEventListener('submit',function(e){
     e.preventDefault();
@@ -1739,7 +1749,7 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
       if(r.status==='ambiguous') msg.textContent="We found more than one guest with that name. Please message us and we'll sort it.";
       else if(r.status==='busy') msg.textContent="Lots of people are replying right now. Please try again in a minute.";
       else { state.misses++; msg.textContent = "We couldn't find that name. Try it exactly as it's written on your invitation." + (state.misses>1?" Still no luck? Message us and we'll sort it.":''); }
-    }).catch(function(){ btn.disabled=false; btn.textContent='Find my invitation'; msg.className='rs-msg warn'; msg.textContent='Something went wrong on our side. Please try again in a moment.'; });
+    }).catch(function(err){ btn.disabled=false; btn.textContent='Find my invitation'; msg.className='rs-msg warn'; msg.textContent=failText(err); });
   });
 
   /* ---- step 2: reply ---- */
@@ -1819,7 +1829,7 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
       msg.className='rs-msg warn';
       if(r.status==='expired'||r.status==='changed'){ msg.textContent='That took a little while, so please find your invitation again. Sorry about that.'; setTimeout(function(){ show('rsFind'); },2400); }
       else msg.textContent='Something went wrong on our side. Please try again in a moment.';
-    }).catch(function(){ btn.disabled=false; renderPeople(); msg.className='rs-msg warn'; msg.textContent='Something went wrong on our side. Please try again in a moment.'; });
+    }).catch(function(err){ btn.disabled=false; renderPeople(); msg.className='rs-msg warn'; msg.textContent=failText(err); });
   });
 
   /* ---- the moment ---- */

@@ -154,7 +154,67 @@ html[data-p="party"] ::selection{background:var(--peony-tint);color:var(--moss)}
 @media (min-width:900px){.view[data-view="travel"] > section:last-of-type{padding-bottom:128px}}
 body > footer{padding-bottom:88px}
 body > footer .thanks{margin-bottom:14px}
-footer nav span{flex-basis:100%;display:block;margin-top:6px;font-size:16px;color:var(--moss-2)}</style>
+footer nav span{flex-basis:100%;display:block;margin-top:6px;font-size:16px;color:var(--moss-2)}
+/* RSVP */
+.rs{max-width:620px;margin:0 auto;padding-bottom:112px}
+.rs-step{animation:rsIn .55s cubic-bezier(.2,.7,.2,1) both}
+@keyframes rsIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.rs-card{background:var(--card,var(--paper));box-shadow:inset 0 0 0 1px var(--card-line,var(--sage));border-radius:20px;padding:36px 24px}
+@media (min-width:600px){.rs-card{padding:48px 48px}}
+.rs-field{display:grid;gap:6px;margin:0 0 18px;text-align:left}
+.rs-field label,.rs-label{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--moss-3)}
+.rs input[type=text],.rs input[type=email],.rs textarea{width:100%;min-height:52px;padding:12px 18px;border:1px solid var(--sage);border-radius:14px;background:var(--field);color:var(--moss);font-family:var(--body);font-size:18px;line-height:1.4}
+.rs textarea{min-height:88px;resize:vertical}
+.rs input:focus,.rs textarea:focus{outline:2px solid var(--moss);outline-offset:2px}
+.rs-hint{margin:-6px 0 22px;font-style:italic;color:var(--moss-3);font-size:16px;text-align:center}
+.rs .btn{width:100%;min-height:54px;font-size:13px}
+.rs .btn[disabled]{opacity:.6;cursor:default}
+.rs-msg{min-height:1.6em;margin:14px 0 0;text-align:center;font-style:italic;color:var(--moss-3)}
+.rs-msg.warn{color:var(--peony-deep,#8A3A4A)}
+.rs-demo{margin:18px auto 0;max-width:340px;padding:8px 14px;border:1px dashed var(--card-line,var(--sage));border-radius:12px;font-size:14px;color:var(--moss-3);text-align:center}
+.rs-hello{margin:0;text-align:center;font-family:var(--script);font-weight:400;font-size:clamp(40px,10vw,54px);line-height:1.1;color:var(--moss)}
+.rs-sub{margin:8px 0 26px;text-align:center;font-family:var(--display);font-style:italic;font-size:21px;color:var(--moss-2)}
+.rs-others{margin:0 0 26px;padding:18px 20px;border-radius:16px;background:var(--cream);text-align:center}
+.rs-others p{margin:0 0 10px;font-family:var(--display);font-style:italic;font-size:20px;color:var(--moss)}
+.rs-others .rs-chips{justify-content:center}
+.rs-chips{display:flex;flex-wrap:wrap;gap:8px}
+.rs-chip{position:relative;display:inline-flex}
+.rs-chip input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.rs-chip span{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border:1px solid var(--sage);border-radius:999px;font-size:17px;color:var(--moss);background:var(--field);transition:background .2s,color .2s,border-color .2s}
+.rs-chip span::before{content:"";width:16px;height:16px;border-radius:50%;border:1px solid var(--sage);background:var(--field);transition:inherit;flex:none}
+.rs-chip input:checked+span{background:var(--moss);border-color:var(--moss);color:var(--cream)}
+.rs-chip input:checked+span::before{background:var(--gold);border-color:var(--gold);box-shadow:inset 0 0 0 3px var(--moss)}
+.rs-chip input:focus-visible+span{outline:2px solid var(--moss);outline-offset:3px}
+.rs-person{margin:0 0 22px;padding:24px 20px 22px;border:1px solid var(--card-line,var(--sage));border-radius:18px;background:var(--field)}
+.rs-person legend{padding:0 10px;margin:0 auto;font-family:var(--display);font-size:28px;line-height:1;color:var(--moss)}
+.rs-choice{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 0}
+.rs-opt{position:relative}
+.rs-opt input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.rs-opt span{display:flex;align-items:center;justify-content:center;text-align:center;min-height:60px;padding:8px 10px;border:1px solid var(--sage);border-radius:14px;font-family:var(--display);font-size:20px;line-height:1.15;color:var(--moss);background:var(--cream);transition:background .25s,color .25s,border-color .25s,transform .25s}
+.rs-opt input:checked+span{background:var(--moss);border-color:var(--moss);color:var(--cream)}
+.rs-opt.yes input:checked+span{background:var(--moss);box-shadow:inset 0 0 0 2px var(--gold)}
+.rs-opt input:focus-visible+span{outline:2px solid var(--moss);outline-offset:3px}
+@media (hover:hover){.rs-opt span:hover{border-color:var(--moss)}}
+.rs-more{margin-top:20px;padding-top:18px;border-top:1px solid var(--card-line,var(--paper));animation:rsIn .45s ease both}
+.rs-q{margin:0 0 10px;font-family:var(--display);font-style:italic;font-size:19px;color:var(--moss)}
+.rs-more .rs-chips{margin-bottom:20px}
+.rs-small{display:block;margin-top:4px;font-size:15px;font-style:italic;color:var(--moss-3);text-transform:none;letter-spacing:0}
+.rs-last{margin:6px 0 22px}
+.rs-again{margin:-12px 0 22px;text-align:center;font-style:italic;color:var(--moss-3)}
+.rs-done{text-align:center}
+.rs-done h2{margin:6px 0 10px;font-family:var(--script);font-weight:400;font-size:clamp(42px,10vw,60px);line-height:1.1;color:var(--moss)}
+.rs-done .rs-lead{margin:0 auto 6px;max-width:440px;font-family:var(--display);font-style:italic;font-size:22px;line-height:1.4;color:var(--moss-2)}
+.rs-count{margin:22px 0 4px;font-family:var(--display);font-size:52px;line-height:1;color:var(--gold)}
+.rs-count-l{margin:0 0 26px;font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--moss-3)}
+.rs-cal{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:0 0 32px}
+.rs-cal .btn{width:auto}
+.rs-next{display:grid;gap:10px;margin:0;padding:22px 0 0;border-top:1px solid var(--card-line,var(--paper));list-style:none}
+.rs-next a{display:flex;justify-content:space-between;align-items:center;min-height:52px;padding:0 6px;font-family:var(--display);font-size:22px;text-decoration:none;border-bottom:1px solid var(--card-line,var(--paper))}
+.rs-next a::after{content:"→";color:var(--gold)}
+.rs-knot{display:block;width:120px;margin:0 auto 4px}
+.rs-confetti{position:fixed;inset:0;z-index:130;pointer-events:none;width:100%;height:100%}
+@media (prefers-reduced-motion:reduce){.rs-step,.rs-more{animation:none}}
+</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Parisienne&display=swap" rel="stylesheet">
@@ -1016,15 +1076,10 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
     </div>
   </section>
 
-  <div class="rsvp" id="rsvp">
+  <div class="rsvp" id="home-rsvp">
     <h2>RSVP</h2>
-    <p>RSVPs open when the invitations go out, before the end of the year. We'll write to you when they do, so please check we have the best email address for you.</p>
-    <form class="signup" id="notify">
-      <label class="sr-only" for="email">Email address</label>
-      <input id="email" type="email" placeholder="Your email address" autocomplete="email">
-      <button class="btn" type="submit">Keep me posted</button>
-    </form>
-    <p class="small-note" id="formNote" role="status">We'll only use this to write to you about the wedding.</p>
+    <p>We would love to know if you can join us. Kindly reply by 1 March 2027.</p>
+    <p style="margin-top:24px"><a class="btn" href="#rsvp">Reply now</a></p>
   </div>
 </div>
 <div class="view tp" data-view="weekend" hidden>
@@ -1317,6 +1372,61 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
     </div>
   </section>
 </div>
+<div class="view tp" data-view="rsvp" hidden>
+  <div class="page-head wrap">
+    <p class="caps eyebrow">RSVP</p>
+    <h1>Will you join us?</h1>
+    <p class="lede">Saturday 18 September 2027 at Markree Castle.<br>Kindly reply by 1 March 2027.</p>
+  </div>
+  <section class="wrap rs" aria-live="polite">
+    <div class="rs-card">
+
+      <form class="rs-step" id="rsFind" novalidate>
+        <div class="rs-field"><label for="rsFirst">First name</label><input id="rsFirst" type="text" autocomplete="given-name" autocapitalize="words" spellcheck="false" required></div>
+        <div class="rs-field"><label for="rsLast">Surname</label><input id="rsLast" type="text" autocomplete="family-name" autocapitalize="words" spellcheck="false" required></div>
+        <p class="rs-hint">Just as it appears on your invitation.</p>
+        <button class="btn" type="submit" id="rsFindBtn">Find my invitation</button>
+        <p class="rs-msg" id="rsFindMsg" role="status"></p>
+        <p class="rs-demo" id="rsDemo" hidden>Preview: try <b>Alex Example</b>. Nothing is saved.</p>
+      </form>
+
+      <form class="rs-step" id="rsReply" hidden novalidate>
+        <p class="rs-hello" id="rsHello"></p>
+        <p class="rs-sub" id="rsSub">We'd love to know if you can join us.</p>
+        <p class="rs-again" id="rsAgain" hidden>You've already replied. Change anything you like below.</p>
+        <div class="rs-others" id="rsOthers" hidden><p id="rsOthersQ"></p><div class="rs-chips" id="rsOthersList"></div></div>
+        <div id="rsPeople"></div>
+        <div class="rs-last" id="rsLast2">
+          <div class="rs-field"><label for="rsEmail">Your email <span class="rs-small">So we can send you the details as they're confirmed.</span></label><input id="rsEmail" type="email" autocomplete="email"></div>
+          <div class="rs-field"><label for="rsMsg">A note to us <span class="rs-small">Optional.</span></label><textarea id="rsMsg" maxlength="1000"></textarea></div>
+        </div>
+        <button class="btn" type="submit" id="rsSend">Send my reply</button>
+        <p class="rs-msg" id="rsSendMsg" role="status"></p>
+      </form>
+
+      <div class="rs-step rs-done" id="rsDone" hidden tabindex="-1">
+        <svg class="rs-knot" viewBox="-60 -20 120 38" aria-hidden="true"><path d="M-58 4 H-26 M26 4 H58" fill="none" stroke="var(--gold)" stroke-width="1" stroke-linecap="round"/><path transform="scale(.62) translate(0 1)" d="M-16.45 13.5 A16.51 16.51 0 0 0 0 -15 M16.45 13.5 A16.51 16.51 0 0 1 0 -15 M-16.45 13.5 A16.51 16.51 0 0 1 0 -1.63 M16.45 13.5 A16.51 16.51 0 0 0 0 -1.63" fill="none" stroke="var(--moss)" stroke-width="2" stroke-linecap="round"/></svg>
+        <h2 id="rsDoneTitle"></h2>
+        <p class="rs-lead" id="rsDoneLead"></p>
+        <div id="rsDoneYes" hidden>
+          <p class="rs-count" id="rsDays"></p>
+          <p class="rs-count-l">days to go</p>
+          <div class="rs-cal"><a class="btn ghost" id="rsIcs" download="hannah-lawrence-wedding.ics" href="#">Add to your calendar</a><a class="btn ghost" id="rsGcal" target="_blank" rel="noopener" href="#">Google Calendar</a></div>
+          <ul class="rs-next">
+            <li><a href="#travel">Travel &amp; Stay</a></li>
+            <li><a href="#dress-code">What to wear</a></li>
+            <li><a href="#trip">Make a trip of it</a></li>
+          </ul>
+        </div>
+        <p class="rs-msg" id="rsChange">Plans change? Come back and update your reply until 1 March.</p>
+      </div>
+
+      <div class="rs-step" id="rsClosed" hidden>
+        <p class="rs-sub" style="margin:0" id="rsClosedText"></p>
+      </div>
+    </div>
+  </section>
+</div>
 <div class="view tp" data-view="soon" hidden>
   <div class="page-head wrap soon-wrap">
     <p class="caps eyebrow" id="soonEyebrow">Coming soon</p>
@@ -1389,12 +1499,12 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
 
 
   /* ---- one-page routing: each page is a view, links are plain #anchors ---- */
-  var views={trip:'Make a Trip of It',markree:'Markree',home:'Hannah & Lawrence',weekend:'The Weekend',travel:'Travel & Stay',soon:''};
+  var views={rsvp:'RSVP',trip:'Make a Trip of It',markree:'Markree',home:'Hannah & Lawrence',weekend:'The Weekend',travel:'Travel & Stay',soon:''};
   var soonPages={    story:['Our Story','How we got here','How we met, and the proposal.'],
     faq:['FAQ','Questions','Answers to the questions we think you will have.'],
     gifts:['Gifts','Gifts',"A short note from us about gifts."],
     privacy:['Privacy','Your details','What we keep, why, and how to ask us to delete it.']};
-  var owner={trip:'trip',markree:'markree',mkDay:'weekend',mkStory:'markree',home:'home',top:'home',rsvp:'home',plan:'home','home-weekend':'home',
+  var owner={trip:'trip',markree:'markree',mkDay:'weekend',mkStory:'markree',home:'home',top:'home',rsvp:'rsvp','home-rsvp':'home',plan:'home','home-weekend':'home',
     weekend:'weekend',schedule:'weekend','dress-code':'weekend','weekend-days':'weekend',
     travel:'travel','getting-here':'travel','where-to-stay':'travel'};
   var first=true;
@@ -1570,3 +1680,191 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
 })();</script>
 </body>
 </html>
+<script>
+/* RSVP: finds a guest by name, replies for the household, writes to the guest list sheet. */
+(function(){
+  var ENDPOINT = ''; // the Apps Script web app URL (ends in /exec); see rsvp/README.md
+  var CLOSES = Date.parse('2027-03-01T23:59:59Z'), WEDDING = Date.parse('2027-09-18T14:00:00+01:00');
+  var LIVE = /hannahandlawrence\./.test(location.hostname);
+  var DEMO = !ENDPOINT && !LIVE;
+  var $ = function(id){ return document.getElementById(id); };
+  var steps = ['rsFind','rsReply','rsDone','rsClosed'];
+  var state = { token:'', people:[], you:null, misses:0 };
+  function show(id){ steps.forEach(function(s){ $(s).hidden = s!==id; }); }
+  function esc(s){ return String(s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+  /* ---- talking to the sheet (or the preview stand-in) ---- */
+  var demoStore = { replied:false, data:{} };
+  function demo(req){
+    return new Promise(function(res){ setTimeout(function(){
+      var n=function(s){return String(s||'').toLowerCase().replace(/[^a-z]/g,'')};
+      if(req.action==='find'){
+        if(n(req.last)==='example' && (n(req.first)==='alex'||n(req.first)==='sam')){
+          var me = n(req.first)==='sam'?2:1, d=demoStore.data;
+          var p=[{id:1,first:'Alex',plusOne:false},{id:2,first:'Sam',plusOne:true}].map(function(x){ var r=d[x.id]||{}; return Object.assign(x,{replied:!!r.rsvp,rsvp:r.rsvp||'',friday:!!r.friday,sunday:!!r.sunday,song:r.song||'',plusOneName:r.plusOneName||'',dietaryOnFile:!!r.dietary}); });
+          if(me===2) p.reverse();
+          res({ok:true,status:'found',token:'demo',you:me,people:p,replied:demoStore.replied});
+        } else res({ok:true,status:'not_found'});
+      } else {
+        demoStore.replied=true; req.people.forEach(function(p){ demoStore.data[p.id]=p; });
+        res({ok:true,status:'saved',coming:req.people.some(function(p){return p.rsvp==='yes';})});
+      }
+    }, 650); });
+  }
+  function call(req){
+    if(DEMO) return demo(req);
+    return fetch(ENDPOINT,{method:'POST',body:JSON.stringify(req)}).then(function(r){ return r.json(); });
+  }
+
+  /* ---- step 1: find ---- */
+  function closedText(){
+    if(Date.now()>CLOSES) return "Replies have now closed. If anything has changed, please message us.";
+    return "Our RSVP opens very soon. We'll let you know as soon as it does.";
+  }
+  function start(){
+    if(!ENDPOINT && LIVE || Date.now()>CLOSES){ $('rsClosedText').textContent=closedText(); show('rsClosed'); return; }
+    $('rsDemo').hidden=!DEMO; show('rsFind');
+  }
+  $('rsFind').addEventListener('submit',function(e){
+    e.preventDefault();
+    var f=$('rsFirst').value.trim(), l=$('rsLast').value.trim(), msg=$('rsFindMsg'), btn=$('rsFindBtn');
+    msg.className='rs-msg';
+    if(!f||!l){ msg.textContent='Please add both your first name and your surname.'; (f?$('rsLast'):$('rsFirst')).focus(); return; }
+    btn.disabled=true; btn.textContent='Finding your invitation…'; msg.textContent='';
+    call({action:'find',first:f,last:l}).then(function(r){
+      btn.disabled=false; btn.textContent='Find my invitation';
+      if(r.status==='found'){ state.token=r.token; state.people=r.people; state.you=r.you; state.misses=0; buildReply(r); return; }
+      if(r.status==='closed'){ $('rsClosedText').textContent=closedText(); show('rsClosed'); return; }
+      msg.className='rs-msg warn';
+      if(r.status==='ambiguous') msg.textContent="We found more than one guest with that name. Please message us and we'll sort it.";
+      else if(r.status==='busy') msg.textContent="Lots of people are replying right now. Please try again in a minute.";
+      else { state.misses++; msg.textContent = "We couldn't find that name. Try it exactly as it's written on your invitation." + (state.misses>1?" Still no luck? Message us and we'll sort it.":''); }
+    }).catch(function(){ btn.disabled=false; btn.textContent='Find my invitation'; msg.className='rs-msg warn'; msg.textContent='Something went wrong on our side. Please try again in a moment.'; });
+  });
+
+  /* ---- step 2: reply ---- */
+  function personCard(p){
+    var id=p.id, yes=p.rsvp==='yes', no=p.rsvp==='no';
+    return '<fieldset class="rs-person" data-id="'+id+'"><legend>'+esc(p.first)+'</legend>'+
+      '<div class="rs-choice" role="radiogroup" aria-label="'+esc(p.first)+', Saturday 18 September">'+
+        '<label class="rs-opt yes"><input type="radio" name="rs-'+id+'" value="yes"'+(yes?' checked':'')+'><span>Joyfully accepts</span></label>'+
+        '<label class="rs-opt"><input type="radio" name="rs-'+id+'" value="no"'+(no?' checked':'')+'><span>Regretfully declines</span></label>'+
+      '</div>'+
+      '<div class="rs-more"'+(yes?'':' hidden')+'>'+
+        '<p class="rs-q">Will you join us for the rest of the weekend too?</p>'+
+        '<div class="rs-chips">'+
+          '<label class="rs-chip"><input type="checkbox" data-k="friday"'+(p.friday?' checked':'')+'><span>Friday evening drinks</span></label>'+
+          '<label class="rs-chip"><input type="checkbox" data-k="sunday"'+(p.sunday?' checked':'')+'><span>Sunday</span></label>'+
+        '</div>'+
+        (p.plusOne?'<div class="rs-field"><label for="rsP'+id+'">Your guest\'s name</label><input type="text" id="rsP'+id+'" data-k="plusOneName" value="'+esc(p.plusOneName||'')+'" autocomplete="off"></div>':'')+
+        '<div class="rs-field"><label for="rsD'+id+'">Dietary or access needs <span class="rs-small">'+(p.dietaryOnFile?'We have your details. Add anything new here.':'Optional. Only we see this.')+'</span></label><textarea id="rsD'+id+'" data-k="dietary" maxlength="500"></textarea></div>'+
+        '<div class="rs-field"><label for="rsS'+id+'">A song that will get you dancing <span class="rs-small">Optional.</span></label><input type="text" id="rsS'+id+'" data-k="song" value="'+esc(p.song||'')+'" maxlength="200" autocomplete="off"></div>'+
+      '</div></fieldset>';
+  }
+  function list(names){ return names.length<2?names.join(''):names.slice(0,-1).join(', ')+' and '+names[names.length-1]; }
+  function selected(){
+    var ids=[state.you];
+    $('rsOthersList').querySelectorAll('input:checked').forEach(function(i){ ids.push(Number(i.value)); });
+    return state.people.filter(function(p){ return ids.indexOf(p.id)>=0; });
+  }
+  function renderPeople(){
+    var keep={};
+    $('rsPeople').querySelectorAll('.rs-person').forEach(function(el){ keep[el.dataset.id]=el; });
+    var box=$('rsPeople'), sel=selected();
+    box.innerHTML='';
+    sel.forEach(function(p){ if(keep[p.id]) box.appendChild(keep[p.id]); else box.insertAdjacentHTML('beforeend',personCard(p)); });
+    $('rsSend').textContent = sel.length>1?'Send our reply':'Send my reply';
+  }
+  function buildReply(r){
+    var me=state.people.filter(function(p){return p.id===state.you;})[0];
+    var others=state.people.filter(function(p){return p.id!==state.you;});
+    $('rsHello').textContent='Lovely to see you, '+me.first+'.';
+    $('rsAgain').hidden=!r.replied;
+    $('rsSub').hidden=!!r.replied;
+    $('rsOthers').hidden=!others.length;
+    if(others.length){
+      $('rsOthersQ').textContent='Would you also like to reply for '+list(others.map(function(p){return p.first;}))+'?';
+      $('rsOthersList').innerHTML=others.map(function(p){ return '<label class="rs-chip"><input type="checkbox" value="'+p.id+'" checked><span>'+esc(p.first)+'</span></label>'; }).join('');
+    }
+    $('rsPeople').innerHTML=''; renderPeople();
+    $('rsEmail').value=''; $('rsMsg').value=''; $('rsSendMsg').textContent='';
+    show('rsReply'); window.scrollTo({top:Math.max(0,$('rsReply').getBoundingClientRect().top+scrollY-110),behavior:'smooth'});
+  }
+  $('rsOthersList').addEventListener('change',renderPeople);
+  $('rsPeople').addEventListener('change',function(e){
+    if(e.target.type!=='radio') return;
+    var card=e.target.closest('.rs-person'), more=card.querySelector('.rs-more');
+    more.hidden=e.target.value!=='yes';
+  });
+
+  /* ---- send ---- */
+  $('rsReply').addEventListener('submit',function(e){
+    e.preventDefault();
+    var msg=$('rsSendMsg'), btn=$('rsSend'), people=[], missing=null;
+    $('rsPeople').querySelectorAll('.rs-person').forEach(function(card){
+      var c=card.querySelector('input[type=radio]:checked'), p={id:Number(card.dataset.id),rsvp:c?c.value:''};
+      if(!c && !missing) missing=card;
+      card.querySelectorAll('[data-k]').forEach(function(el){ p[el.dataset.k]= el.type==='checkbox'?el.checked:el.value.trim(); });
+      people.push(p);
+    });
+    msg.className='rs-msg warn';
+    if(missing){ msg.textContent='Just let us know whether '+missing.querySelector('legend').textContent+' can make it.'; missing.scrollIntoView({behavior:'smooth',block:'center'}); return; }
+    var email=$('rsEmail').value.trim();
+    if(email && !/.+@.+\..+/.test(email)){ msg.textContent='That email address doesn\'t look quite right.'; $('rsEmail').focus(); return; }
+    msg.className='rs-msg'; msg.textContent=''; btn.disabled=true; btn.textContent='Sending…';
+    call({action:'submit',token:state.token,people:people,email:email,message:$('rsMsg').value.trim()}).then(function(r){
+      btn.disabled=false; renderPeople();
+      if(r.status==='saved'){ done(r.coming, people); return; }
+      if(r.status==='closed'){ $('rsClosedText').textContent=closedText(); show('rsClosed'); return; }
+      msg.className='rs-msg warn';
+      if(r.status==='expired'||r.status==='changed'){ msg.textContent='That took a little while, so please find your invitation again. Sorry about that.'; setTimeout(function(){ show('rsFind'); },2400); }
+      else msg.textContent='Something went wrong on our side. Please try again in a moment.';
+    }).catch(function(){ btn.disabled=false; renderPeople(); msg.className='rs-msg warn'; msg.textContent='Something went wrong on our side. Please try again in a moment.'; });
+  });
+
+  /* ---- the moment ---- */
+  function done(coming, people){
+    var names=people.filter(function(p){return p.rsvp==='yes';}).length;
+    $('rsDoneTitle').textContent = coming ? "We can't wait to celebrate with you" : "We'll miss you";
+    $('rsDoneLead').textContent = coming
+      ? (names>1?'Your replies are safely with us.':'Your reply is safely with us.')+' Markree, the music and a very long dinner are waiting.'
+      : "Thank you for letting us know. We'll raise a glass to you at Markree.";
+    $('rsDoneYes').hidden=!coming;
+    if(coming){
+      $('rsDays').textContent=Math.max(0,Math.ceil((WEDDING-Date.now())/864e5));
+      var ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Hannah & Lawrence//Wedding//EN','BEGIN:VEVENT','UID:hl-wedding-20270918@hannahandlawrence.com','DTSTAMP:20261114T000000Z',
+        'DTSTART;VALUE=DATE:20270918','DTEND;VALUE=DATE:20270919','SUMMARY:Hannah & Lawrence\'s wedding',
+        'LOCATION:Markree Castle\\, Collooney\\, Co. Sligo F91 AE81','DESCRIPTION:Arrive from 2pm. Black tie. hannahandlawrence.com','END:VEVENT','END:VCALENDAR'].join('\r\n');
+      $('rsIcs').href='data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);
+      $('rsGcal').href='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent("Hannah & Lawrence's wedding")+'&dates=20270918/20270919&location='+encodeURIComponent('Markree Castle, Collooney, Co. Sligo F91 AE81')+'&details='+encodeURIComponent('Arrive from 2pm. Black tie. hannahandlawrence.com');
+    }
+    show('rsDone');
+    window.scrollTo({top:Math.max(0,$('rsDone').closest('.rs').getBoundingClientRect().top+scrollY-110),behavior:'smooth'});
+    try{ $('rsDone').focus({preventScroll:true}); }catch(e){}
+    if(coming && !matchMedia('(prefers-reduced-motion: reduce)').matches) confetti();
+  }
+  function confetti(){
+    var c=document.createElement('canvas'); c.className='rs-confetti'; c.setAttribute('aria-hidden','true'); document.body.appendChild(c);
+    var x=c.getContext('2d'), dpr=Math.min(2,devicePixelRatio||1), W=innerWidth, H=innerHeight; c.width=W*dpr; c.height=H*dpr; x.setTransform(dpr,0,0,dpr,0,0);
+    var cs=getComputedStyle(document.documentElement), v=function(n,d){ return (cs.getPropertyValue(n)||'').trim()||d; };
+    var cols=[v('--peony','#C93A62'),v('--marigold','#F2B035'),v('--cornflower','#2F63C4'),v('--heather','#8A4AA8'),'#F6C9D3',v('--gold','#B8925A'),'#E6B9B1','#FBD98A'];
+    var P=[], n=W<600?120:190;
+    for(var i=0;i<n;i++){ var left=i%2===0;
+      P.push({x:left?-10:W+10,y:H*.8,vx:(left?1:-1)*(3+Math.random()*9),vy:-(10+Math.random()*12)*(H/800+.3),s:5+Math.random()*7,r:Math.random()*6.3,vr:(Math.random()-.5)*.3,t:Math.random()*6.3,k:['rect','petal','dot'][i%3],c:cols[i%cols.length],d:Math.random()*16}); }
+    var t0=performance.now(), dur=3800;
+    (function tick(now){ var el=now-t0; x.clearRect(0,0,W,H);
+      P.forEach(function(p){ if(p.d>0){p.d--;return;}
+        p.vy+=.32; p.vx*=.985; p.vy*=.985; if(p.vy>3.2)p.vy=3.2; p.t+=.08; p.x+=p.vx+Math.sin(p.t)*.8; p.y+=p.vy; p.r+=p.vr;
+        x.save(); x.globalAlpha=el>dur-900?Math.max(0,(dur-el)/900):1; x.translate(p.x,p.y); x.rotate(p.r); x.fillStyle=p.c;
+        if(p.k==='rect') x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);
+        else if(p.k==='dot'){ x.beginPath(); x.arc(0,0,p.s/3,0,7); x.fill(); }
+        else { x.beginPath(); x.ellipse(0,0,p.s/2,p.s/4.5,0,0,7); x.fill(); }
+        x.restore(); });
+      if(el<dur) requestAnimationFrame(tick); else c.remove();
+    })(t0);
+  }
+
+  window.addEventListener('hashchange',function(){ if(location.hash==='#rsvp' && $('rsDone').hidden && $('rsReply').hidden) start(); });
+  start();
+})();
+</script>

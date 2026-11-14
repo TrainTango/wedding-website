@@ -147,6 +147,8 @@ html[data-p="party"] ::selection{background:var(--peony-tint);color:var(--moss)}
 @media (max-width:420px){.pal button{padding:10px 10px}.pal small{display:none}}
 </style>
 <meta name="robots" content="noindex">
+<script>try{if(localStorage.getItem('hl-in')==='1')document.documentElement.classList.add('hl-in')}catch(e){}</script>
+<style>.hl-in .gate{display:none !important}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Parisienne&display=swap" rel="stylesheet">
@@ -1511,12 +1513,14 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
 <script>document.documentElement.setAttribute('data-p','party')</script>
 <script>(function(){
 var gate=document.getElementById('gate'),f=document.getElementById('gateForm'),pw=document.getElementById('gatePw'),msg=document.getElementById('gateMsg');
+if(document.documentElement.classList.contains('hl-in')){gate.hidden=true;return}
 var hero=document.querySelector('.castle');if(hero)document.getElementById('gateCastle').src=hero.src;
 document.documentElement.style.overflow='hidden';
 setTimeout(function(){try{pw.focus({preventScroll:true})}catch(e){}},300);
 f.addEventListener('submit',function(e){e.preventDefault();
  if(pw.value.trim().toLowerCase()!=='markree'){pw.setAttribute('aria-invalid','false');void pw.offsetWidth;pw.setAttribute('aria-invalid','true');msg.className='g-msg err';msg.textContent="That's not quite it. Please try again.";return}
  pw.removeAttribute('aria-invalid');msg.className='g-msg';msg.textContent='Welcome';
+ try{localStorage.setItem('hl-in','1')}catch(e){}
  document.documentElement.style.overflow='';gate.classList.add('out');window.scrollTo(0,0);
  var o=document.getElementById('ornament');if(o){o.classList.remove('intro');void o.offsetWidth;o.classList.add('intro')}
  setTimeout(function(){gate.hidden=true},800);

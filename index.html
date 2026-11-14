@@ -148,7 +148,13 @@ html[data-p="party"] ::selection{background:var(--peony-tint);color:var(--moss)}
 </style>
 <meta name="robots" content="noindex">
 <script>try{if(localStorage.getItem('hl-in')==='1')document.documentElement.classList.add('hl-in')}catch(e){}</script>
-<style>.hl-in .gate{display:none !important}</style>
+<style>.hl-in .gate{display:none !important}
+/* Breathing room above the footer, and a calmer footer */
+.view[data-view="travel"] > section:last-of-type{padding-bottom:96px}
+@media (min-width:900px){.view[data-view="travel"] > section:last-of-type{padding-bottom:128px}}
+body > footer{padding-bottom:88px}
+body > footer .thanks{margin-bottom:14px}
+footer nav span{flex-basis:100%;display:block;margin-top:6px;font-size:16px;color:var(--moss-2)}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Parisienne&display=swap" rel="stylesheet">

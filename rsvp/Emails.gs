@@ -156,8 +156,8 @@ function emailShell_(inner, preheader, footer) {
     '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="' + e.SURROUND + '" style="background:' + e.SURROUND + '"><tr>' +
     '<td align="center" class="outer" style="padding:44px 20px">' +
       // the card: outer gold rule, a sliver of ivory, inner gold rule
-      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="' + e.IVORY + '" style="max-width:480px;background:' + e.IVORY + ';border:1px solid ' + e.GOLD + '"><tr><td style="padding:5px">' +
-      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ' + e.GOLD + '">' +
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="' + e.IVORY + '" style="max-width:480px;background:' + e.IVORY + ';border:1px solid ' + e.GOLD + ';border-radius:16px"><tr><td style="padding:5px">' +
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ' + e.GOLD + ';border-radius:12px">' +
       '<tr><td align="left" style="padding:8px 0 0 8px;font-size:0;line-height:0"><img src="' + e.IMAGES + 'sprig-tl.png" width="132" height="48" alt="" style="display:block;border:0;outline:none;width:132px;height:auto"></td></tr>' +
       '<tr><td align="center" class="inner" style="padding:8px 32px 10px">' +
         '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' +

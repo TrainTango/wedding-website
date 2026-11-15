@@ -1511,7 +1511,7 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
         </div>
         <div id="rsPeople"></div>
         <div class="rs-last" id="rsLast2">
-          <div class="rs-field"><label for="rsEmail">Your email <span class="rs-small">We’ll send you a copy of your reply.</span></label><input id="rsEmail" type="email" autocomplete="email" inputmode="email" enterkeyhint="done"></div>
+          <div class="rs-field"><label for="rsEmail">Your email <span class="rs-small">For a copy of your reply, and updates as plans are confirmed.</span></label><input id="rsEmail" type="email" autocomplete="email" inputmode="email" enterkeyhint="done" required aria-required="true"></div>
         
           <div class="rs-post">
             <label class="rs-check"><input type="checkbox" id="rsPostOn"><span class="rs-box" aria-hidden="true"></span><span class="rs-check-t">I’d like a printed invitation by post<small>A keepsake, posted to you.</small></span></label>
@@ -1976,7 +1976,9 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
     if(needDetail){ msg.textContent='Please tell us a little more about “Other” for '+needDetail.querySelector('legend').textContent+'.'; needDetail.querySelector('textarea').focus(); return; }
     if(badEmail){ msg.textContent='That email address for '+badEmail.querySelector('legend').textContent+' doesn’t look quite right.'; badEmail.querySelector('[data-k=email]').focus(); return; }
     var email=$('rsEmail').value.trim();
-    if(email && !/.+@.+\..+/.test(email)){ msg.textContent='That email address doesn\'t look quite right.'; $('rsEmail').focus(); return; }
+    if(!email){ msg.textContent='Please add your email, so we can send you updates.'; $('rsEmail').classList.add('rs-bad'); $('rsEmail').focus(); return; }
+    if(!/.+@.+\..+/.test(email)){ msg.textContent='That email address doesn\'t look quite right.'; $('rsEmail').classList.add('rs-bad'); $('rsEmail').focus(); return; }
+    $('rsEmail').classList.remove('rs-bad');
     var printed=$('rsPostOn').checked, address=null;
     if(printed){
       var a={line1:$('rsA1').value.trim(),line2:$('rsA2').value.trim(),town:$('rsTown').value.trim(),postcode:$('rsPC').value.trim(),country:$('rsCountry').value.trim()};

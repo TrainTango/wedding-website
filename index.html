@@ -96,6 +96,7 @@ html[data-p="party"] ::selection{background:var(--peony-tint);color:var(--moss)}
 @media (min-width:900px){.mk-estate{padding-bottom:120px}}
 /* Trip page: full-map button, history card and full-size map viewer */
 .waw-btn-row{text-align:center;margin:28px 0 0}
+.waw-close-band{text-align:center;margin:28px 0 0;font-family:var(--display);font-style:italic;font-size:20px;color:var(--moss)}
 .btn.waw-full{background:var(--moss);border-color:var(--moss);color:var(--cream);min-width:min(320px,100%)}
 .btn.waw-full:hover{background:var(--moss-2);border-color:var(--moss-2);color:var(--cream)}
 .tp section.waw-hist{padding-block:24px 96px}
@@ -1400,6 +1401,10 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
     <p class="caps eyebrow">Make a trip of it</p>
     <h1>The Wild Atlantic Way</h1>
   </div>
+  <section class="wrap waw-text" aria-label="About the Wild Atlantic Way">
+    <p>Sligo sits on the Wild Atlantic Way, the coast road that runs for about 2,500 kilometres down the west of Ireland, from Malin Head in Donegal to Kinsale in Cork. It’s a coastline of sea cliffs and long beaches, islands and lighthouses, small harbour towns and very good pubs.</p>
+    <p>Our celebrations run from Friday to Sunday, but if you find yourself with a little time either side of the weekend, the coast is well worth exploring. We’ve put together the map below for anyone who’s curious: a few famous spots along the route, from Slieve League and Mullaghmore just up the road from Sligo, to the Cliffs of Moher and the Skelligs further south.</p>
+  </section>
   <section class="waw-band" aria-labelledby="wawMap">
     <h2 class="sr-only" id="wawMap">Map of the Wild Atlantic Way</h2>
     <figure class="waw-fig">
@@ -1407,11 +1412,7 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
       <figcaption class="waw-hint">From Malin Head to Kinsale, with Markree marked near Sligo.</figcaption>
     </figure>
     <p class="waw-btn-row"><button type="button" class="btn waw-full" id="wawOpen" aria-haspopup="dialog">Open the map</button></p>
-  </section>
-  <section class="wrap waw-text" aria-label="About the Wild Atlantic Way">
-    <p>Sligo sits on the Wild Atlantic Way, the coast road that runs for about 2,500 kilometres down the west of Ireland, from Malin Head in Donegal to Kinsale in Cork. It’s a coastline of sea cliffs and long beaches, islands and lighthouses, small harbour towns and very good pubs.</p>
-    <p>Our celebrations run from Friday to Sunday, but if you find yourself with a little time either side of the weekend, the coast is well worth exploring. We’ve put together the map above for anyone who’s curious: a few famous spots along the route, from Slieve League and Mullaghmore just up the road from Sligo, to the Cliffs of Moher and the Skelligs further south.</p>
-    <p class="waw-close">Safe travels, and see you in Sligo.</p>
+    <p class="waw-close waw-close-band">Safe travels, and see you in Sligo.</p>
   </section>
   <section class="wrap waw-hist" aria-labelledby="wawHistH">
     <div class="hist-card">

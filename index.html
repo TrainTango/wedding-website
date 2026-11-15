@@ -1444,8 +1444,6 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
         <div id="rsPeople"></div>
         <div class="rs-last" id="rsLast2">
           <div class="rs-field"><label for="rsEmail">Email <span class="rs-small">We'll send you a copy of your reply, and the details as they're confirmed.</span></label><input id="rsEmail" type="email" autocomplete="email" inputmode="email" enterkeyhint="done"></div>
-          <div class="rs-adds"><button type="button" class="rs-add" data-open="rsNoteWrap" data-focus="rsMsg">Add a note to us</button></div>
-          <div class="rs-field" id="rsNoteWrap" hidden><label for="rsMsg">A note to us</label><textarea id="rsMsg" maxlength="1000" rows="3"></textarea></div>
         </div>
         <div class="rs-send">
           <button class="btn" type="submit" id="rsSend">Send my reply</button>
@@ -1801,7 +1799,7 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
 
   /* ---- step 2: reply ---- */
   function personCard(p){
-    var id=p.id, yes=p.rsvp==='yes', no=p.rsvp==='no', song=!!p.song;
+    var id=p.id, yes=p.rsvp==='yes', no=p.rsvp==='no';
     return '<fieldset class="rs-person" data-id="'+id+'"><legend>'+esc(p.first)+'</legend>'+
       '<div class="rs-choice">'+
         '<label class="rs-opt yes"><input type="radio" name="rs-'+id+'" value="yes"'+(yes?' checked':'')+'><span>Joyfully accepts</span></label>'+
@@ -1813,13 +1811,10 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
           '<label class="rs-chip"><input type="checkbox" data-k="friday"'+(p.friday?' checked':'')+'><span>Friday drinks</span></label>'+
           '<label class="rs-chip"><input type="checkbox" data-k="sunday"'+(p.sunday?' checked':'')+'><span>Sunday</span></label>'+
         '</div>'+
-        (p.plusOne?'<div class="rs-field"><label for="rsP'+id+'">Your guest\'s name</label><input type="text" id="rsP'+id+'" data-k="plusOneName" value="'+esc(p.plusOneName||'')+'" autocomplete="off" enterkeyhint="done"></div>':'')+
         '<div class="rs-adds">'+
           '<button type="button" class="rs-add" data-open="rsDW'+id+'" data-focus="rsD'+id+'">'+(p.dietaryOnFile?'Add to dietary details':'Dietary or access needs')+'</button>'+
-          (song?'':'<button type="button" class="rs-add" data-open="rsSW'+id+'" data-focus="rsS'+id+'">A song request</button>')+
         '</div>'+
         '<div class="rs-field" id="rsDW'+id+'" hidden><label for="rsD'+id+'">Dietary or access needs <span class="rs-small">'+(p.dietaryOnFile?'We have your details. Add anything new here.':'Only we see this.')+'</span></label><textarea id="rsD'+id+'" data-k="dietary" maxlength="500" rows="2"></textarea></div>'+
-        '<div class="rs-field" id="rsSW'+id+'"'+(song?'':' hidden')+'><label for="rsS'+id+'">A song that will get you dancing</label><input type="text" id="rsS'+id+'" data-k="song" value="'+esc(p.song||'')+'" maxlength="200" autocomplete="off" enterkeyhint="done"></div>'+
       '</div></fieldset>';
   }
   function list(names){ return names.length<2?names.join(''):names.slice(0,-1).join(', ')+' and '+names[names.length-1]; }
@@ -1846,7 +1841,7 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
     $('rsMe').textContent=me.first;
     $('rsOthersList').innerHTML=others.map(function(p){ return '<label class="rs-who"><input type="checkbox" value="'+p.id+'" checked aria-label="Reply for '+esc(p.first)+'"><span>'+esc(p.first)+'</span></label>'; }).join('');
     $('rsPeople').innerHTML=''; renderPeople();
-    $('rsEmail').value=''; $('rsMsg').value=''; $('rsNoteWrap').hidden=true; document.querySelector('[data-open=rsNoteWrap]').hidden=false; $('rsSendMsg').textContent='';
+    $('rsEmail').value=''; $('rsSendMsg').textContent='';
     show('rsReply'); window.scrollTo({top:Math.max(0,$('rsReply').getBoundingClientRect().top+scrollY-110),behavior:'smooth'});
   }
   $('rsOthersList').addEventListener('change',renderPeople);
@@ -1876,7 +1871,7 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
     var email=$('rsEmail').value.trim();
     if(email && !/.+@.+\..+/.test(email)){ msg.textContent='That email address doesn\'t look quite right.'; $('rsEmail').focus(); return; }
     msg.className='rs-msg'; msg.textContent=''; btn.disabled=true; btn.textContent='Sending…';
-    call({action:'submit',token:state.token,people:people,email:email,message:$('rsMsg').value.trim()}).then(function(r){
+    call({action:'submit',token:state.token,people:people,email:email}).then(function(r){
       btn.disabled=false; renderPeople();
       if(r.status==='saved'){ done(r.coming, people, r.emailed); return; }
       if(r.status==='closed'){ $('rsClosedText').textContent=closedText(); show('rsClosed'); return; }

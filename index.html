@@ -247,6 +247,22 @@ footer nav span{flex-basis:100%;display:block;margin-top:6px;font-size:16px;colo
 .rs-diet-chips .rs-chip span{min-height:38px;padding:0 13px;font-size:15px;gap:7px}
 .rs-diet-chips .rs-chip span::before{width:13px;height:13px}
 .rs-their-email{margin-top:10px}
+
+/* UX tidy: tick-many options show + and a tick, like the household names */
+.rs-chip span::before{content:"";width:10px;height:10px;border:0;border-radius:0;background:linear-gradient(var(--sage),var(--sage)) center/10px 1.5px no-repeat,linear-gradient(var(--sage),var(--sage)) center/1.5px 10px no-repeat;box-shadow:none}
+.rs-chip input:checked+span::before{width:11px;height:6px;margin-top:-3px;background:none;border-left:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);transform:rotate(-45deg);box-shadow:none}
+.rs-diet-hint{margin:2px 0 10px;font-size:15px;font-style:italic;color:var(--moss-3)}
+.rs-diet .rs-field{margin-bottom:6px}
+.rs-diet textarea{min-height:64px;font-size:16px}
+.rs-diet textarea::placeholder{color:var(--moss-3);opacity:.75;font-style:italic}
+.rs .rs-adds{margin:0}
+.rs-their-email{margin-top:0}
+.rs-post{margin-top:14px}
+/* the address: compact, town and postcode side by side */
+.rs-addr .rs-field{gap:4px;margin-bottom:10px}
+.rs-addr label{font-size:11px;letter-spacing:.18em}
+.rs-addr input[type=text]{min-height:46px;padding:10px 16px;font-size:17px}
+.rs-addr-row{grid-template-columns:1.25fr 1fr !important;align-items:start}
 /* printed invitation request */
 .rs-post{margin:4px 0 0}
 .rs-post-chip span{font-size:16px}
@@ -1484,7 +1500,7 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
         </div>
         <div id="rsPeople"></div>
         <div class="rs-last" id="rsLast2">
-          <div class="rs-field"><label for="rsEmail">Your email <span class="rs-small">We'll send you a copy of your reply, and the details as they're confirmed.</span></label><input id="rsEmail" type="email" autocomplete="email" inputmode="email" enterkeyhint="done"></div>
+          <div class="rs-field"><label for="rsEmail">Your email <span class="rs-small">We’ll send you a copy of your reply.</span></label><input id="rsEmail" type="email" autocomplete="email" inputmode="email" enterkeyhint="done"></div>
         
           <div class="rs-post">
             <label class="rs-chip rs-post-chip"><input type="checkbox" id="rsPostOn"><span>I’d like a printed invitation by post</span></label>
@@ -1495,7 +1511,7 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
               <div class="rs-field"><label for="rsA2">Address line 2 <span class="rs-opt-l">optional</span></label><input id="rsA2" type="text" autocomplete="address-line2" maxlength="120" enterkeyhint="next"></div>
               <div class="rs-addr-row">
                 <div class="rs-field"><label for="rsTown">Town or city</label><input id="rsTown" type="text" autocomplete="address-level2" maxlength="80" enterkeyhint="next"></div>
-                <div class="rs-field"><label for="rsPC">Postcode or Eircode</label><input id="rsPC" type="text" autocomplete="postal-code" autocapitalize="characters" maxlength="20" enterkeyhint="next"></div>
+                <div class="rs-field"><label for="rsPC">Postcode</label><input id="rsPC" type="text" autocomplete="postal-code" autocapitalize="characters" maxlength="20" enterkeyhint="next"></div>
               </div>
               <div class="rs-field"><label for="rsCountry">Country</label><input id="rsCountry" type="text" autocomplete="country-name" maxlength="60" value="United Kingdom" enterkeyhint="done"></div>
               <p class="rs-small rs-addr-note">Only we see this, and we’ll use it just to post your invitation.</p>
@@ -1855,7 +1871,7 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
   });
 
   /* ---- step 2: reply ---- */
-  var DIETS=['Vegetarian','Vegan','Pescatarian','Gluten-free / coeliac','Dairy-free','Peanut allergy','Tree nut allergy','Shellfish allergy','Halal','Other'];
+  var DIETS=['Vegetarian','Vegan','Pescatarian','Gluten-free','Dairy-free','Peanut allergy','Other'];
   function personCard(p){
     var id=p.id, yes=p.rsvp==='yes', no=p.rsvp==='no';
     return '<fieldset class="rs-person" data-id="'+id+'"><legend>'+esc(p.first)+'</legend>'+
@@ -1873,9 +1889,9 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
           '<button type="button" class="rs-add" data-open="rsDW'+id+'" data-focus="">'+(p.dietaryOnFile?'Add to dietary details':'Dietary or access needs')+'</button>'+
         '</div>'+
         '<div class="rs-diet" id="rsDW'+id+'" hidden>'+
-          '<p class="rs-label">Dietary needs <span class="rs-small">'+(p.dietaryOnFile?'We have your details. Add anything new here.':'Tap any that apply. Only we see this.')+'</span></p>'+
+          '<p class="rs-diet-hint">'+(p.dietaryOnFile?'We have your details. Add anything new here.':'Tap any that apply. Only we see this.')+'</p>'+
           '<div class="rs-chips rs-diet-chips">'+DIETS.map(function(d){ return '<label class="rs-chip"><input type="checkbox" data-diet="'+d+'"><span>'+d+'</span></label>'; }).join('')+'</div>'+
-          '<div class="rs-field"><label for="rsD'+id+'">Anything else? <span class="rs-small">Allergies, other needs or access requirements.</span></label><textarea id="rsD'+id+'" data-k="dietNote" maxlength="400" rows="2"></textarea></div>'+
+          '<div class="rs-field"><label class="sr-only" for="rsD'+id+'">Anything else</label><textarea id="rsD'+id+'" data-k="dietNote" maxlength="400" rows="2" placeholder="Anything else? Other allergies or access needs"></textarea></div>'+
         '</div>'+
       '</div>'+
       (id!==state.you ?

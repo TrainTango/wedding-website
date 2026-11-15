@@ -172,7 +172,7 @@ function applySubmit(table, claim, req, now) {
 
 /** Lower-case, strip accents, apostrophes, hyphens and extra spaces. */
 function norm(s) {
-  return String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]/g, '')
+  return String(s == null ? '' : s).normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .toLowerCase().replace(/[’'`.\-]/g, '').replace(/\s+/g, ' ').trim();
 }
 

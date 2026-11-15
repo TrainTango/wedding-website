@@ -1,4 +1,12 @@
 {
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "wedding-website-alpha-pearp.vercel.app" }],
+      "destination": "https://hannahandlawrence.wedding/:path*",
+      "permanent": true
+    }
+  ],
   "headers": [
     { "source": "/(.*)", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] }
   ]

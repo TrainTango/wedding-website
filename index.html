@@ -233,7 +233,7 @@ footer nav span{flex-basis:100%;display:block;margin-top:6px;font-size:16px;colo
 .rs-who input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
 .rs-who > span{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px 0 11px;border-radius:999px;border:1px solid var(--moss);background:var(--cream);font-size:16px;color:var(--moss);transition:opacity .2s,background .2s,border-color .2s}
 .rs-who > span::before{content:"";width:12px;height:7px;margin-top:-3px;border-left:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);transform:rotate(-45deg);transition:inherit}
-.rs-who input:not(:checked)+span{opacity:.55;border-color:var(--sage);border-style:dashed;background:transparent}
+.rs-who input:not(:checked)+span{opacity:.75;border-color:var(--sage);border-style:dashed;background:transparent}
 .rs-who input:not(:checked)+span::before{border-color:var(--sage);border-bottom:0;width:10px;height:10px;margin-top:0;transform:none;border-left:0;background:linear-gradient(var(--sage),var(--sage)) center/10px 1.5px no-repeat,linear-gradient(var(--sage),var(--sage)) center/1.5px 10px no-repeat}
 .rs-who input:focus-visible+span{outline:2px solid var(--moss);outline-offset:3px}
 .view[data-view="rsvp"] section.wrap.rs{max-width:640px;margin-inline:auto;padding-top:4px}
@@ -242,7 +242,9 @@ footer nav span{flex-basis:100%;display:block;margin-top:6px;font-size:16px;colo
 .rs-person{margin:0;padding:22px 0 20px;border:0;border-top:1px solid var(--card-line,var(--paper));border-radius:0;background:none;min-width:0}
 .rs-person legend{float:left;width:100%;padding:0;margin:0 0 12px;text-align:left;font-size:26px}
 .rs-choice{clear:both;margin:0}
-.rs-opt span{min-height:56px;font-size:19px}
+.rs-choice{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.rs-opt span{min-height:52px;padding:8px 4px;font-size:clamp(14px,4.2vw,18px);white-space:nowrap}
+@media (max-width:340px){.rs-opt span{white-space:normal}}
 .rs-more{margin-top:16px;padding-top:0;border-top:0}
 .rs-q{font-size:18px;margin-bottom:8px}
 .rs-more .rs-chips{margin-bottom:12px}
@@ -1446,7 +1448,7 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
         <p class="rs-again" id="rsAgain" hidden>You've already replied. Change anything you like below.</p>
         <div class="rs-for" id="rsFor" hidden>
           <div class="rs-for-row" role="group" aria-labelledby="rsForL"><span class="rs-for-l" id="rsForL">Replying for</span><span class="rs-who rs-me"><span id="rsMe"></span></span><span id="rsOthersList" class="rs-for-list"></span></div>
-          <p class="rs-for-hint">Tap a name to leave them out.</p>
+          <p class="rs-for-hint">Tap a name to reply for them too.</p>
         </div>
         <div id="rsPeople"></div>
         <div class="rs-last" id="rsLast2">
@@ -1846,7 +1848,7 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
     $('rsSub').hidden=!!r.replied;
     $('rsFor').hidden=!others.length;
     $('rsMe').textContent=me.first;
-    $('rsOthersList').innerHTML=others.map(function(p){ return '<label class="rs-who"><input type="checkbox" value="'+p.id+'" checked aria-label="Reply for '+esc(p.first)+'"><span>'+esc(p.first)+'</span></label>'; }).join('');
+    $('rsOthersList').innerHTML=others.map(function(p){ return '<label class="rs-who"><input type="checkbox" value="'+p.id+'" aria-label="Also reply for '+esc(p.first)+'"><span>'+esc(p.first)+'</span></label>'; }).join('');
     $('rsPeople').innerHTML=''; renderPeople();
     $('rsEmail').value=''; $('rsSendMsg').textContent='';
     show('rsReply'); window.scrollTo({top:Math.max(0,$('rsReply').getBoundingClientRect().top+scrollY-110),behavior:'smooth'});

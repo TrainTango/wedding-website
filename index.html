@@ -238,6 +238,18 @@ footer nav span{flex-basis:100%;display:block;margin-top:6px;font-size:16px;colo
 .rs-who input:focus-visible+span{outline:2px solid var(--moss);outline-offset:3px}
 .view[data-view="rsvp"] section.wrap.rs{max-width:640px;margin-inline:auto;padding-top:4px}
 @media (min-width:900px){.view[data-view="rsvp"] section.wrap.rs{padding-top:16px}}
+
+/* printed invitation request */
+.rs-post{margin:4px 0 0}
+.rs-post-chip span{font-size:16px}
+.rs-post-note{margin:10px 0 0}
+.rs-addr{margin:16px 0 0;padding:0;border:0;animation:rsIn .4s ease both}
+.rs-addr .rs-field{margin-bottom:14px}
+.rs-addr-row{display:grid;grid-template-columns:1fr;gap:0 12px}
+@media (min-width:520px){.rs-addr-row{grid-template-columns:1.3fr 1fr}}
+.rs-opt-l{font-size:11px;letter-spacing:.14em;color:var(--moss-3);opacity:.8}
+.rs-addr-note{margin:2px 0 0}
+.rs input.rs-bad{border-color:var(--peony-deep,#8A3A4A)}
 .rs-for-hint{margin:0 0 6px;text-align:center;font-size:14px;font-style:italic;color:var(--moss-3)}
 .rs-person{margin:0;padding:22px 0 20px;border:0;border-top:1px solid var(--card-line,var(--paper));border-radius:0;background:none;min-width:0}
 .rs-person legend{float:left;width:100%;padding:0;margin:0 0 12px;text-align:left;font-size:26px}
@@ -1465,6 +1477,22 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
         <div id="rsPeople"></div>
         <div class="rs-last" id="rsLast2">
           <div class="rs-field"><label for="rsEmail">Email <span class="rs-small">We'll send you a copy of your reply, and the details as they're confirmed.</span></label><input id="rsEmail" type="email" autocomplete="email" inputmode="email" enterkeyhint="done"></div>
+        
+          <div class="rs-post">
+            <label class="rs-chip rs-post-chip"><input type="checkbox" id="rsPostOn"><span>I’d like a printed invitation by post</span></label>
+            <p class="rs-small rs-post-note" id="rsPostNote" hidden>We already have an address for you. Only fill this in if it has changed.</p>
+            <fieldset class="rs-addr" id="rsAddr" hidden>
+              <legend class="sr-only">Postal address</legend>
+              <div class="rs-field"><label for="rsA1">Address</label><input id="rsA1" type="text" autocomplete="address-line1" maxlength="120" enterkeyhint="next"></div>
+              <div class="rs-field"><label for="rsA2">Address line 2 <span class="rs-opt-l">optional</span></label><input id="rsA2" type="text" autocomplete="address-line2" maxlength="120" enterkeyhint="next"></div>
+              <div class="rs-addr-row">
+                <div class="rs-field"><label for="rsTown">Town or city</label><input id="rsTown" type="text" autocomplete="address-level2" maxlength="80" enterkeyhint="next"></div>
+                <div class="rs-field"><label for="rsPC">Postcode or Eircode</label><input id="rsPC" type="text" autocomplete="postal-code" autocapitalize="characters" maxlength="20" enterkeyhint="next"></div>
+              </div>
+              <div class="rs-field"><label for="rsCountry">Country</label><input id="rsCountry" type="text" autocomplete="country-name" maxlength="60" value="United Kingdom" enterkeyhint="done"></div>
+              <p class="rs-small rs-addr-note">Only we see this, and we’ll use it just to post your invitation.</p>
+            </fieldset>
+          </div>
         </div>
         <div class="rs-send">
           <button class="btn" type="submit" id="rsSend">Send my reply</button>
@@ -1863,9 +1891,16 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
     $('rsOthersList').innerHTML=others.map(function(p){ return '<label class="rs-who"><input type="checkbox" value="'+p.id+'" aria-label="Also reply for '+esc(p.first)+'"><span>'+esc(p.first)+'</span></label>'; }).join('');
     $('rsPeople').innerHTML=''; renderPeople();
     $('rsEmail').value=''; $('rsSendMsg').textContent='';
+    state.addressOnFile=!!r.addressOnFile;
+    ['rsA1','rsA2','rsTown','rsPC'].forEach(function(id){ $(id).value=''; $(id).classList.remove('rs-bad'); }); $('rsCountry').value='United Kingdom';
+    $('rsPostOn').checked=!!r.printed; $('rsAddr').hidden=!r.printed; $('rsPostNote').hidden=!(r.printed && r.addressOnFile);
     show('rsReply'); window.scrollTo({top:Math.max(0,$('rsReply').getBoundingClientRect().top+scrollY-110),behavior:'smooth'});
   }
   $('rsOthersList').addEventListener('change',renderPeople);
+  $('rsPostOn').addEventListener('change',function(){
+    var on=this.checked; $('rsAddr').hidden=!on; $('rsPostNote').hidden=!(on && state.addressOnFile);
+    if(on && !state.addressOnFile) $('rsA1').focus();
+  });
   $('rsReply').addEventListener('click',function(e){
     var b=e.target.closest('.rs-add'); if(!b) return;
     var box=$(b.dataset.open); box.hidden=false; b.hidden=true;
@@ -1891,24 +1926,36 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
     if(missing){ msg.textContent='Just let us know whether '+missing.querySelector('legend').textContent+' can make it.'; missing.scrollIntoView({behavior:'smooth',block:'center'}); return; }
     var email=$('rsEmail').value.trim();
     if(email && !/.+@.+\..+/.test(email)){ msg.textContent='That email address doesn\'t look quite right.'; $('rsEmail').focus(); return; }
+    var printed=$('rsPostOn').checked, address=null;
+    if(printed){
+      var a={line1:$('rsA1').value.trim(),line2:$('rsA2').value.trim(),town:$('rsTown').value.trim(),postcode:$('rsPC').value.trim(),country:$('rsCountry').value.trim()};
+      var typed=a.line1||a.line2||a.town||a.postcode;
+      if(!state.addressOnFile || typed){
+        var need=[['rsA1','line1'],['rsTown','town'],['rsPC','postcode'],['rsCountry','country']].filter(function(f){ var bad=!a[f[1]]; $(f[0]).classList.toggle('rs-bad',bad); return bad; });
+        if(need.length){ msg.textContent='Please add your full address so we can post your invitation.'; $(need[0][0]).focus(); return; }
+        address=a;
+      }
+    }
     msg.className='rs-msg'; msg.textContent=''; btn.disabled=true; btn.textContent='Sending…';
-    call({action:'submit',token:state.token,people:people,email:email}).then(function(r){
+    call({action:'submit',token:state.token,people:people,email:email,printed:printed,address:address}).then(function(r){
       btn.disabled=false; renderPeople();
-      if(r.status==='saved'){ done(r.coming, people, r.emailed); return; }
+      if(r.status==='saved'){ done(r.coming, people, r.emailed, printed); return; }
       if(r.status==='closed'){ $('rsClosedText').textContent=closedText(); show('rsClosed'); return; }
       msg.className='rs-msg warn';
+      if(r.status==='address_needed'){ msg.textContent='Please add your full address so we can post your invitation.'; $('rsAddr').hidden=false; $('rsA1').focus(); return; }
       if(r.status==='expired'||r.status==='changed'){ msg.textContent='That took a little while, so please find your invitation again. Sorry about that.'; setTimeout(function(){ show('rsFind'); },2400); }
       else msg.textContent='Something went wrong on our side. Please try again in a moment.';
     }).catch(function(err){ btn.disabled=false; renderPeople(); msg.className='rs-msg warn'; msg.textContent=failText(err); });
   });
 
   /* ---- the moment ---- */
-  function done(coming, people, emailed){
+  function done(coming, people, emailed, printed){
     var names=people.filter(function(p){return p.rsvp==='yes';}).length;
     $('rsDoneTitle').textContent = coming ? "We can't wait to celebrate with you" : "We'll miss you";
     $('rsDoneLead').textContent = coming
       ? (names>1?'Your replies are safely with us.':'Your reply is safely with us.')+' Markree, the music and a very long dinner are waiting.'
       : "Thank you for letting us know. We'll raise a glass to you at Markree.";
+    if(printed) $('rsDoneLead').textContent += ' We’ll post your printed invitation to you.';
     if(emailed) $('rsDoneLead').textContent += ' A copy is on its way to your inbox.';
     $('rsDoneYes').hidden=!coming;
     if(coming){

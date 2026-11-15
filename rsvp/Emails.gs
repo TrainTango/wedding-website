@@ -20,6 +20,8 @@ var EMAIL = {
   FLOWERS: 'crest'   // 'crest': the posy sits at the top in place of the knot. 'corner': the posy is tucked into the top-right corner.
 };
 
+var POSTED_LINE = 'We’ll post a printed invitation to the address you gave us.';
+
 /** Pure: subject, plain text and HTML for a reply confirmation. */
 function confirmationEmail(info) {
   var names = joinNames(info.people.map(function (p) { return p.first; }));
@@ -54,7 +56,7 @@ function confirmationEmail(info) {
     '',
     'Here’s what we have:'
   ].concat(rows.map(function (r) { return '  ' + r.name + ': ' + r.status.toLowerCase() + (r.extra ? ', plus ' + r.extra.replace(/ too$/, '') : ''); }),
-    [''], body ? [body, ''] : [],
+    [''], body ? [body, ''] : [], info.printed ? [POSTED_LINE, ''] : [],
     ['With love,', 'Hannah & Lawrence', '',
      'Plans change? You can update your reply until 1 March 2027 at ' + replyUrl + ' (the password is on your invitation).']).join('\n');
 
@@ -76,6 +78,7 @@ function confirmationEmail(info) {
     '<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' + rowHtml +
       '<tr><td style="border-top:1px solid ' + e.RULE + ';font-size:0;line-height:0">&nbsp;</td></tr></table></td></tr>' : '') +
     (body ? para_(esc_(body).replace('our website', '<a href="' + CONFIG.SITE + '" style="color:' + e.GREEN + '">our website</a>'), 16, '26px 6px 0') : '') +
+    (info.printed ? para_(esc_(POSTED_LINE), 16, '16px 6px 0', e.MUTED, true) : '') +
     signOff_();
 
   var footer = 'Plans change? <a href="' + replyUrl + '" style="color:' + e.GREEN + '">Update your reply</a> until 1&nbsp;March&nbsp;2027.<br>The password is on your invitation.';

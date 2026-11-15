@@ -34,7 +34,7 @@ var CONFIG = {
 
 // Reply columns, added to the right of the guest list if they aren't there yet.
 var REPLY_COLS = ['RSVP', 'Friday', 'Sunday', 'Dietary & access', 'Reply email',
-  'Replied by', 'Replied at', 'Reminded at'];
+  'Replied by', 'Replied at', 'Reminded at', 'Printed invitation', 'Postal address'];
 
 var ACCEPT = 'Joyfully accepts', DECLINE = 'Regretfully declines';
 
@@ -98,8 +98,12 @@ function buildFound(table, me, sign) {
   });
   var keys = members.map(function (r) { return { row: r.row, key: personKey(r.cells, c) }; });
   var token = sign({ people: keys, by: me.row, exp: Date.now() + CONFIG.TOKEN_HOURS * 3600e3 });
+  // Printed invitations are one per household. The address itself is never sent back to the site.
+  var has = function (r, col) { return c[col] != null && !!String(r.cells[c[col]] || '').trim(); };
   return { ok: true, status: 'found', token: token, you: me.row, people: people,
-    replied: people.some(function (p) { return p.replied; }) };
+    replied: people.some(function (p) { return p.replied; }),
+    printed: members.some(function (r) { return has(r, 'Printed invitation'); }),
+    addressOnFile: members.some(function (r) { return has(r, 'Postal address'); }) };
 }
 
 /* ---------------- submit ---------------- */
@@ -170,10 +174,27 @@ function applySubmit(table, claim, req, now) {
   } else {
     email = storedEmail_(replier, c);
   }
+  // A printed invitation by post: one per household, recorded on the row of the person replying.
+  var printed = req.printed === true;
+  if (printed) {
+    var a = req.address || {};
+    var addr = { line1: clip(a.line1, 120), line2: clip(a.line2, 120), town: clip(a.town, 80), postcode: clip(a.postcode, 20), country: clip(a.country, 60) };
+    var complete = addr.line1 && addr.town && addr.postcode && addr.country;
+    var onFile = Object.keys(allowed).some(function (row) {
+      return c['Postal address'] != null && String(allowed[row].cells[c['Postal address']] || '').trim();
+    });
+    if (!complete && !onFile) return { ok: false, status: 'address_needed' };
+    put(replier, 'Printed invitation', 'Requested');
+    if (complete) put(replier, 'Postal address', [addr.line1, addr.line2, addr.town, addr.postcode, addr.country].filter(String).join(', '));
+    summary.push('printed invitation requested');
+  } else if (req.printed === false && c['Printed invitation'] != null && String(replier.cells[c['Printed invitation']] || '').trim()) {
+    put(replier, 'Printed invitation', '');   // they unticked it
+  }
   var answered = people.filter(function (p) { return p.rsvp === 'yes' || p.rsvp === 'no'; });
   var confirm = email ? {
     to: email,
     coming: coming,
+    printed: printed,
     people: answered.map(function (p) {
       return { first: String(allowed[p.id].cells[c['First name']]).trim(), yes: p.rsvp === 'yes',
         friday: p.rsvp === 'yes' && !!p.friday, sunday: p.rsvp === 'yes' && !!p.sunday };

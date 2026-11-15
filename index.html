@@ -1849,6 +1849,19 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
     return fetch(ENDPOINT,{method:'POST',body:JSON.stringify(req)}).then(function(r){ return r.json(); })
       .catch(function(err){ if(!LIVE) err.preview=true; throw err; });
   }
+  // Apps Script sleeps when idle and takes a few seconds to wake. Nudge it awake while guests
+  // are still reading or typing, so "Find my invitation" answers quickly.
+  var lastWarm=0;
+  function warm(){
+    if(!LIVE || Date.now()-lastWarm<240000) return;
+    lastWarm=Date.now();
+    fetch(ENDPOINT,{method:'GET',cache:'no-store'}).catch(function(){});
+  }
+  warm();
+  window.addEventListener('hashchange',function(){ if(/rsvp/.test(location.hash)) warm(); });
+  ['rsFirst','rsLast'].forEach(function(id){ var el=$(id); if(el){ el.addEventListener('focus',warm); el.addEventListener('input',warm); } });
+  document.addEventListener('visibilitychange',function(){ if(!document.hidden && /rsvp/.test(location.hash)) warm(); });
+
   function failText(err){
     return err && err.preview ? "This preview can't reach the guest list. It will work on hannahandlawrence.wedding, or try Alex Example here."
       : 'Something went wrong on our side. Please try again in a moment.';

@@ -25,12 +25,11 @@ html[data-p="party"] .ornament .k,html[data-p="party"] .ornament .join{stroke:va
 html[data-p="party"] .date{color:var(--peony);font-weight:500}
 html[data-p="party"] .place::after{content:"";display:block;width:56px;height:10px;margin:18px auto 0;
  background:radial-gradient(circle,var(--moss) 4px,transparent 4.5px) 0 50%/10px 10px no-repeat,radial-gradient(circle,var(--moss) 4px,transparent 4.5px) 50% 50%/10px 10px no-repeat,radial-gradient(circle,var(--moss) 4px,transparent 4.5px) 100% 50%/10px 10px no-repeat}
-/* countdown: bottle-green ring with two gold dots and a gold number */
-html[data-p="party"] .countdown b{position:relative;display:flex;align-items:center;justify-content:center;width:128px;height:128px;margin:6px auto 16px;
- border:1.5px solid var(--moss);border-radius:50%;color:#A8834A;line-height:1;font-size:46px;font-variant-numeric:lining-nums tabular-nums;padding-top:2px}
-html[data-p="party"] .countdown b::before,html[data-p="party"] .countdown b::after{content:"";position:absolute;left:50%;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px var(--cream)}
-html[data-p="party"] .countdown b::before{top:-4.25px}
-html[data-p="party"] .countdown b::after{bottom:-4.25px}
+/* countdown: an engraved numeral between two fine gold rules */
+html[data-p="party"] .countdown b{display:flex;align-items:center;justify-content:center;gap:22px;margin:4px auto 10px;
+ color:var(--moss);line-height:1;font-size:64px;font-weight:400;font-variant-numeric:lining-nums tabular-nums;letter-spacing:.02em}
+html[data-p="party"] .countdown b::before,html[data-p="party"] .countdown b::after{content:"";flex:0 0 56px;height:1px;background:var(--gold)}
+@media (min-width:900px){html[data-p="party"] .countdown b{font-size:76px;gap:28px}html[data-p="party"] .countdown b::before,html[data-p="party"] .countdown b::after{flex-basis:72px}}
 /* essentials: a coloured pill per item */
 html[data-p="party"] .frame{border-color:var(--peony)}
 html[data-p="party"] .frame-inner{border-color:var(--marigold)}

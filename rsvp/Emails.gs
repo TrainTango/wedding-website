@@ -15,7 +15,8 @@ var EMAIL = {
   MUTED: '#5E6F63',
   RULE: '#E6DFCF',
   SERIF: "Georgia,'Times New Roman',serif",
-  IMAGES: 'https://hannahandlawrence.wedding/email/'
+  IMAGES: 'https://hannahandlawrence.wedding/email/',
+  FLOWERS: 'crest'   // 'crest': the posy sits at the top in place of the knot. 'corner': the posy is tucked into the top-right corner.
 };
 
 /** Pure: subject, plain text and HTML for a reply confirmation. */
@@ -118,7 +119,10 @@ function reminderEmail(firstNames) {
 
 function titleBlock_(title) {
   var e = EMAIL;
-  return '<tr><td align="center" style="padding:18px 0 6px"><img src="' + e.IMAGES + 'knot.png" width="160" height="28" alt="" style="display:block;border:0;outline:none;width:160px;height:auto"></td></tr>' +
+  var emblem = e.FLOWERS === 'crest'
+    ? '<tr><td align="center" style="padding:14px 0 0"><img src="' + e.IMAGES + 'posy.png" width="84" height="84" alt="" style="display:block;border:0;outline:none;width:84px;height:auto"></td></tr>'
+    : '<tr><td align="center" style="padding:18px 0 6px"><img src="' + e.IMAGES + 'knot.png" width="160" height="28" alt="" style="display:block;border:0;outline:none;width:160px;height:auto"></td></tr>';
+  return emblem +
     '<tr><td align="center" style="padding:14px 0 0;font-family:' + e.SERIF + ';font-size:30px;line-height:1.2;font-weight:normal;color:' + e.GREEN + '">' + esc_(title) + '</td></tr>' +
     '<tr><td align="center" style="padding:8px 0 30px;font-family:' + e.SERIF + ';font-size:15px;line-height:1.5;font-style:italic;color:' + e.MUTED + '">Saturday 18 September 2027<br>Markree Castle, Co. Sligo</td></tr>';
 }
@@ -135,15 +139,18 @@ function signOff_(padding) {
     'With love,<br><span style="font-size:22px">Hannah &amp; Lawrence</span></td></tr>';
 }
 
-/** The foot of the card: Fionn in the middle, a small posy tucked into the corner. */
+/** The foot of the card: Fionn on his own, under the sign-off. */
 function cardFoot_() {
   var e = EMAIL;
-  return '<tr><td style="padding:0 6px 6px 6px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>' +
-    '<td width="100" style="width:100px;font-size:0;line-height:0">&nbsp;</td>' +
-    '<td align="center" valign="bottom" style="padding:18px 0 14px"><img src="' + e.IMAGES + 'fionn.png" width="96" height="82" alt="Fionn, Markree’s wolfhound" ' +
-      'style="display:block;border:0;outline:none;width:96px;height:auto;font-family:' + e.SERIF + ';font-size:12px;font-style:italic;color:' + e.MUTED + '"></td>' +
-    '<td width="100" align="right" valign="bottom" style="width:100px;font-size:0;line-height:0"><img src="' + e.IMAGES + 'posy.png" width="100" height="100" alt="" style="display:block;border:0;outline:none;width:100px;height:auto;margin-left:auto"></td>' +
-    '</tr></table></td></tr>';
+  return '<tr><td align="center" style="padding:20px 0 26px"><img src="' + e.IMAGES + 'fionn.png" width="88" height="75" alt="Fionn, Markree’s wolfhound" ' +
+    'style="display:block;border:0;outline:none;width:88px;height:auto;font-family:' + e.SERIF + ';font-size:12px;font-style:italic;color:' + e.MUTED + '"></td></tr>';
+}
+
+/** In 'corner' style, the posy tucked into the card's top-right corner. */
+function cornerPosy_() {
+  var e = EMAIL;
+  if (e.FLOWERS !== 'corner') return '';
+  return '<tr><td align="right" style="padding:6px 6px 0 0;font-size:0;line-height:0"><img src="' + e.IMAGES + 'posy-hang.png" width="78" height="78" alt="" style="display:block;border:0;outline:none;width:78px;height:auto;margin-left:auto"></td></tr>';
 }
 
 /**
@@ -175,14 +182,14 @@ function emailImage_(name) {
   } catch (e) { console.error(e); return null; }
 }
 
-/** The card every email sits in: ivory, inside a fine double gold rule, on bottle green, with a posy in the corner. */
+/** The card every email sits in: ivory, inside a fine double gold rule, on bottle green. */
 function emailShell_(inner, preheader, footer) {
   var e = EMAIL;
   return '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">' +
     '<meta name="viewport" content="width=device-width,initial-scale=1">' +
     '<meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only">' +
     '<style>:root{color-scheme:light only}body{margin:0;padding:0}a{color:' + e.GREEN + '}' +
-    '@media (max-width:480px){.outer{padding:20px 10px !important}.inner{padding:28px 18px 0 !important}}</style></head>' +
+    '@media (max-width:480px){.outer{padding:20px 10px !important}.inner{padding-left:18px !important;padding-right:18px !important}}</style></head>' +
     '<body style="margin:0;padding:0;background:' + e.SURROUND + '">' +
     '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:' + e.SURROUND + '">' + esc_(preheader || '') + '&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>' +
     '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="' + e.SURROUND + '" style="background:' + e.SURROUND + '"><tr>' +
@@ -190,7 +197,8 @@ function emailShell_(inner, preheader, footer) {
       // the card: outer gold rule, a sliver of ivory, inner gold rule
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="' + e.IVORY + '" style="max-width:480px;background:' + e.IVORY + ';border:1px solid ' + e.GOLD + ';border-radius:16px"><tr><td style="padding:5px">' +
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ' + e.GOLD + ';border-radius:12px">' +
-      '<tr><td align="center" class="inner" style="padding:34px 32px 0">' +
+      cornerPosy_() +
+      '<tr><td align="center" class="inner" style="padding:' + (e.FLOWERS === 'corner' ? '0' : '34px') + ' 32px 0">' +
         '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' +
         '<tr><td align="center" style="font-family:' + e.SERIF + ';font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:' + e.GOLD + '">Hannah &amp; Lawrence</td></tr>' +
         inner +

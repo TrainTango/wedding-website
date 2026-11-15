@@ -309,6 +309,8 @@ img{max-width:100%;height:auto}
 .menu nav{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;text-align:center}
 .menu nav a{font-family:var(--display);font-size:32px;line-height:1.2;text-decoration:none;padding:8px 0}
 .menu .rule{width:56px;height:1px;background:var(--sage);margin:18px 0}
+.menu nav a.menu-rsvp{min-width:200px;min-height:54px;padding:0 40px 0 calc(40px + .24em);font-family:var(--body);font-size:14px;line-height:1;letter-spacing:.24em;color:var(--cream);margin-top:6px}
+.menu nav a.menu-rsvp:hover{background:var(--moss-2);border-color:var(--moss-2)}
 .menu-foot{text-align:center;font-family:var(--display);font-style:italic;font-size:18px;color:var(--moss-3)}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 28px;border-radius:999px;border:1px solid var(--moss);background:var(--moss);color:var(--cream);font-family:var(--body);font-size:13px;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;cursor:pointer}
@@ -1065,7 +1067,7 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
       <a href="#travel" data-nav="travel">Travel &amp; Stay</a>
       <a href="#trip" data-nav="trip">Make a Trip of It</a>
     <span class="rule" aria-hidden="true"></span>
-    <a class="btn" href="#rsvp" style="font-family:var(--body);font-size:13px">RSVP</a>
+    <a class="btn menu-rsvp" href="#rsvp">RSVP</a>
   </nav>
   <p class="menu-foot">Saturday 18 September 2027 · Markree Castle</p>
 </div>

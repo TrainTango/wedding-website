@@ -16,6 +16,7 @@ var EMAIL = {
   RULE: '#E6DFCF',
   SERIF: "Georgia,'Times New Roman',serif",
   IMAGES: 'https://hannahandlawrence.wedding/email/',
+  IMAGES_BACKUP: 'https://raw.githubusercontent.com/TrainTango/wedding-website/main/email/',  // used if the website can't be reached
   FLOWERS: 'crest'   // 'crest': the posy sits at the top in place of the knot. 'corner': the posy is tucked into the top-right corner.
 };
 
@@ -77,7 +78,7 @@ function confirmationEmail(info) {
     (body ? para_(esc_(body).replace('our website', '<a href="' + CONFIG.SITE + '" style="color:' + e.GREEN + '">our website</a>'), 16, '26px 6px 0') : '') +
     signOff_();
 
-  var footer = 'Plans change? <a href="' + replyUrl + '" style="color:' + e.GREEN + '">Update your reply</a> until 1 March 2027.<br>The password is on your invitation.';
+  var footer = 'Plans change? <a href="' + replyUrl + '" style="color:' + e.GREEN + '">Update your reply</a> until 1&nbsp;March&nbsp;2027.<br>The password is on your invitation.';
   return { subject: subject, text: text, html: emailShell_(inner, preheader, footer) };
 }
 
@@ -123,7 +124,7 @@ function titleBlock_(title) {
     ? '<tr><td align="center" style="padding:14px 0 0"><img src="' + e.IMAGES + 'posy.png" width="84" height="84" alt="" style="display:block;border:0;outline:none;width:84px;height:auto"></td></tr>'
     : '<tr><td align="center" style="padding:18px 0 6px"><img src="' + e.IMAGES + 'knot.png" width="160" height="28" alt="" style="display:block;border:0;outline:none;width:160px;height:auto"></td></tr>';
   return emblem +
-    '<tr><td align="center" style="padding:14px 0 0;font-family:' + e.SERIF + ';font-size:30px;line-height:1.2;font-weight:normal;color:' + e.GREEN + '">' + esc_(title) + '</td></tr>' +
+    '<tr><td align="center" style="padding:14px 0 0;font-family:' + e.SERIF + ';font-size:28px;line-height:1.2;font-weight:normal;color:' + e.GREEN + '">' + esc_(title) + '</td></tr>' +
     '<tr><td align="center" style="padding:8px 0 30px;font-family:' + e.SERIF + ';font-size:15px;line-height:1.5;font-style:italic;color:' + e.MUTED + '">Saturday 18 September 2027<br>Markree Castle, Co. Sligo</td></tr>';
 }
 
@@ -173,9 +174,12 @@ function emailImage_(name) {
     var cache = CacheService.getScriptCache(), key = 'img2_' + name;
     var b64 = cache.get(key);
     if (!b64) {
-      var res = UrlFetchApp.fetch(EMAIL.IMAGES + name + '.png', { muteHttpExceptions: true });
-      if (res.getResponseCode() !== 200) return null;
-      b64 = Utilities.base64Encode(res.getContent());
+      var sources = [EMAIL.IMAGES, EMAIL.IMAGES_BACKUP], res = null;
+      for (var i = 0; i < sources.length && !b64; i++) {
+        try { res = UrlFetchApp.fetch(sources[i] + name + '.png', { muteHttpExceptions: true, followRedirects: true }); } catch (err) { res = null; }
+        if (res && res.getResponseCode() === 200 && /png/i.test(String(res.getHeaders()['Content-Type'] || 'png'))) b64 = Utilities.base64Encode(res.getContent());
+      }
+      if (!b64) return null;
       cache.put(key, b64, 21600);
     }
     return Utilities.newBlob(Utilities.base64Decode(b64), 'image/png', name + '.png');
@@ -189,16 +193,16 @@ function emailShell_(inner, preheader, footer) {
     '<meta name="viewport" content="width=device-width,initial-scale=1">' +
     '<meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only">' +
     '<style>:root{color-scheme:light only}body{margin:0;padding:0}a{color:' + e.GREEN + '}' +
-    '@media (max-width:480px){.outer{padding:20px 10px !important}.inner{padding-left:18px !important;padding-right:18px !important}}</style></head>' +
+    '@media (min-width:600px){.outer{padding:44px 20px !important}.inner{padding-left:34px !important;padding-right:34px !important}}</style></head>' +
     '<body style="margin:0;padding:0;background:' + e.SURROUND + '">' +
     '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:' + e.SURROUND + '">' + esc_(preheader || '') + '&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>' +
     '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="' + e.SURROUND + '" style="background:' + e.SURROUND + '"><tr>' +
-    '<td align="center" class="outer" style="padding:44px 20px">' +
+    '<td align="center" class="outer" style="padding:28px 12px">' +
       // the card: outer gold rule, a sliver of ivory, inner gold rule
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="' + e.IVORY + '" style="max-width:480px;background:' + e.IVORY + ';border:1px solid ' + e.GOLD + ';border-radius:16px"><tr><td style="padding:5px">' +
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ' + e.GOLD + ';border-radius:12px">' +
       cornerPosy_() +
-      '<tr><td align="center" class="inner" style="padding:' + (e.FLOWERS === 'corner' ? '0' : '34px') + ' 32px 0">' +
+      '<tr><td align="center" class="inner" style="padding:' + (e.FLOWERS === 'corner' ? '0' : '30px') + ' 22px 0">' +
         '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' +
         '<tr><td align="center" style="font-family:' + e.SERIF + ';font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:' + e.GOLD + '">Hannah &amp; Lawrence</td></tr>' +
         inner +

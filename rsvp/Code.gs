@@ -6,7 +6,7 @@
  *   { action: "find",   first, last }          -> finds a guest and their household
  *   { action: "submit", token, people, ... }    -> writes their replies into the sheet
  *
- * It also sends guests emails from your Google account:
+ * It also sends guests emails (designed in Emails.gs) from hello@hannahandlawrence.com:
  *   - a copy of their reply, whenever they reply with an email address
  *   - a gentle reminder in February to anyone who hasn't replied (see scheduleReminders)
  *
@@ -217,70 +217,7 @@ function esc_(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-/** Pure: subject, plain text and HTML for a reply confirmation. Exposed for testing. */
-function confirmationEmail(info) {
-  var names = joinNames(info.people.map(function (p) { return p.first; }));
-  var replyUrl = CONFIG.SITE + '/#rsvp';
-  var lines = info.people.map(function (p) {
-    if (!p.yes) return p.first + ': regretfully declines';
-    var extra = [];
-    if (p.friday) extra.push('Friday drinks');
-    if (p.sunday) extra.push('Sunday');
-    return p.first + ': joyfully accepts' + (extra.length ? ', plus ' + joinNames(extra) : '') +
-      (p.plusOne ? ', with ' + p.plusOne : '');
-  });
-  var intro, outro, subject;
-  if (info.coming) {
-    subject = 'See you at Markree';
-    intro = ['Thank you for replying. We’re so happy you’ll be with us at Markree Castle on Saturday 18 September 2027.'];
-    outro = ['Guests arrive from 2pm, and it’s black tie. Over the coming months we’ll add more to the website about the weekend, from travel to where to stay.'];
-  } else {
-    subject = 'Thank you for letting us know';
-    intro = ['Thank you for replying. We’ll miss you, and we’ll raise a glass to you at Markree.'];
-    outro = [];
-  }
-  var change = 'If anything changes, you can update your reply until 1 March 2027 at ' + replyUrl + ' (the password is on your invitation).';
-
-  var text = ['Dear ' + names + ',', ''].concat(intro, ['', 'Here’s what we have:'], lines.map(function (l) { return '  ' + l; }),
-    [''], outro, outro.length ? [''] : [], [change, '', 'With love,', 'Hannah & Lawrence']).join('\n');
-
-  var html = emailShell_(
-    '<p>Dear ' + esc_(names) + ',</p>' +
-    intro.map(function (t) { return '<p>' + esc_(t) + '</p>'; }).join('') +
-    '<p style="margin:24px 0 8px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#B8925A">Here’s what we have</p>' +
-    '<table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%">' +
-    lines.map(function (l) { return '<tr><td style="padding:8px 0;border-top:1px solid #E6DFCF">' + esc_(l) + '</td></tr>'; }).join('') +
-    '</table>' +
-    outro.map(function (t) { return '<p style="margin-top:24px">' + esc_(t) + '</p>'; }).join('') +
-    '<p style="margin-top:24px">If anything changes, you can <a href="' + replyUrl + '" style="color:#1E3829">update your reply</a> until 1 March 2027. The password is on your invitation.</p>');
-  return { subject: subject, text: text, html: html };
-}
-
-/** Pure: a reminder for a household that hasn't replied. Exposed for testing. */
-function reminderEmail(firstNames) {
-  var names = joinNames(firstNames);
-  var replyUrl = CONFIG.SITE + '/#rsvp';
-  var subject = 'A gentle reminder: replies by 1 March';
-  var body = 'We’d love to know whether you can join us at Markree Castle on Saturday 18 September 2027. ' +
-    'Replies close on 1 March, and it only takes a minute.';
-  var text = ['Dear ' + names + ',', '', body, '', 'Reply here: ' + replyUrl + ' (the password is on your invitation).', '',
-    'If you’ve already let us know another way, thank you, and please ignore this.', '', 'With love,', 'Hannah & Lawrence'].join('\n');
-  var html = emailShell_(
-    '<p>Dear ' + esc_(names) + ',</p><p>' + esc_(body) + '</p>' +
-    '<p style="margin:28px 0"><a href="' + replyUrl + '" style="display:inline-block;padding:12px 28px;background:#1E3829;color:#FBF8F1;text-decoration:none;letter-spacing:.08em">Reply now</a></p>' +
-    '<p>The password is on your invitation. If you’ve already let us know another way, thank you, and please ignore this.</p>');
-  return { subject: subject, text: text, html: html };
-}
-
-function emailShell_(inner) {
-  return '<div style="background:#FBF8F1;padding:32px 16px">' +
-    '<div style="max-width:520px;margin:0 auto;font-family:Georgia,\'Times New Roman\',serif;font-size:17px;line-height:1.6;color:#1E3829">' +
-    '<p style="text-align:center;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:#B8925A;margin:0 0 28px">Hannah &amp; Lawrence · 18 September 2027</p>' +
-    inner +
-    '<p style="margin-top:28px">With love,<br>Hannah &amp; Lawrence</p>' +
-    '<p style="margin-top:36px;text-align:center;font-size:13px;color:#6B7A70"><a href="' + CONFIG.SITE + '" style="color:#6B7A70">hannahandlawrence.com</a></p>' +
-    '</div></div>';
-}
+/* The email designs (confirmationEmail, reminderEmail, emailShell_) live in Emails.gs. */
 
 /**
  * Sends from hello@ when this Google account has it set up under Gmail's "Send mail as".

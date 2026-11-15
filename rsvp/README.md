@@ -6,6 +6,7 @@ Replies are written straight into the private "Wedding Spreadsheet" Google Sheet
 1. Open the Wedding Spreadsheet in Google Sheets.
 2. Go to **Extensions → Apps Script**.
 3. Delete whatever is in the editor, paste in everything from `Code.gs`, and click **Save**.
+4. Click **+** next to **Files** → **Script**, name it `Emails`, paste in everything from `Emails.gs`, and click **Save**. This file holds the design and wording of the guest emails.
 
 ## 2. Run the setup once
 1. In the toolbar, choose the function **setup** and click **Run**.

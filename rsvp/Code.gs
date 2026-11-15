@@ -216,13 +216,14 @@ function esc_(s) {
  */
 function send_(to, mail) {
   var from = CONFIG.FROM_ADDRESS;
+  var inl = inlineImages_(mail.html);   // in Emails.gs: images travel with the email
   var aliases = [];
   try { aliases = GmailApp.getAliases(); } catch (e) { /* no Gmail access: fall back below */ }
   if (from && aliases.indexOf(from) >= 0) {
-    GmailApp.sendEmail(to, mail.subject, mail.text, { from: from, name: CONFIG.FROM_NAME, htmlBody: mail.html });
+    GmailApp.sendEmail(to, mail.subject, mail.text, { from: from, name: CONFIG.FROM_NAME, htmlBody: inl.html, inlineImages: inl.images });
     return;
   }
-  var opts = { to: to, subject: mail.subject, body: mail.text, htmlBody: mail.html, name: CONFIG.FROM_NAME };
+  var opts = { to: to, subject: mail.subject, body: mail.text, htmlBody: inl.html, inlineImages: inl.images, name: CONFIG.FROM_NAME };
   if (from) opts.replyTo = from;
   MailApp.sendEmail(opts);
 }

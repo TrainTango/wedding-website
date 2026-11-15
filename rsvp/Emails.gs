@@ -74,8 +74,7 @@ function confirmationEmail(info) {
     '<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' + rowHtml +
       '<tr><td style="border-top:1px solid ' + e.RULE + ';font-size:0;line-height:0">&nbsp;</td></tr></table></td></tr>' : '') +
     (body ? para_(esc_(body).replace('our website', '<a href="' + CONFIG.SITE + '" style="color:' + e.GREEN + '">our website</a>'), 16, '26px 6px 0') : '') +
-    signOff_() +
-    fionn_('22px 0 0');
+    signOff_();
 
   var footer = 'Plans change? <a href="' + replyUrl + '" style="color:' + e.GREEN + '">Update your reply</a> until 1 March 2027.<br>The password is on your invitation.';
   return { subject: subject, text: text, html: emailShell_(inner, preheader, footer) };
@@ -109,8 +108,7 @@ function reminderEmail(firstNames) {
     para_('Dear ' + esc_(names) + ',', 18, '0 6px') +
     para_(esc_(opening), 17, '10px 6px 0') +
     button +
-    fionn_('20px 0 0') +
-    signOff_('14px 0 0');
+    signOff_('30px 0 0');
 
   var footer = 'Already let us know another way? Thank you, and please ignore this.';
   return { subject: subject, text: text, html: emailShell_(inner, preheader, footer) };
@@ -137,20 +135,54 @@ function signOff_(padding) {
     'With love,<br><span style="font-size:22px">Hannah &amp; Lawrence</span></td></tr>';
 }
 
-function fionn_(padding) {
+/** The foot of the card: Fionn in the middle, a small posy tucked into the corner. */
+function cardFoot_() {
   var e = EMAIL;
-  return '<tr><td align="center" style="padding:' + padding + '"><img src="' + e.IMAGES + 'fionn.png" width="96" height="82" alt="Fionn, Markree’s wolfhound" ' +
-    'style="display:block;border:0;outline:none;width:96px;height:auto;font-family:' + e.SERIF + ';font-size:12px;font-style:italic;color:' + e.MUTED + '"></td></tr>';
+  return '<tr><td style="padding:0 6px 6px 6px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>' +
+    '<td width="100" style="width:100px;font-size:0;line-height:0">&nbsp;</td>' +
+    '<td align="center" valign="bottom" style="padding:18px 0 14px"><img src="' + e.IMAGES + 'fionn.png" width="96" height="82" alt="Fionn, Markree’s wolfhound" ' +
+      'style="display:block;border:0;outline:none;width:96px;height:auto;font-family:' + e.SERIF + ';font-size:12px;font-style:italic;color:' + e.MUTED + '"></td>' +
+    '<td width="100" align="right" valign="bottom" style="width:100px;font-size:0;line-height:0"><img src="' + e.IMAGES + 'posy.png" width="100" height="100" alt="" style="display:block;border:0;outline:none;width:100px;height:auto;margin-left:auto"></td>' +
+    '</tr></table></td></tr>';
 }
 
-/** The card every email sits in: ivory, inside a fine double gold rule, on bottle green. */
+/**
+ * Attaches the card's images to the email itself, so they show straight away
+ * instead of waiting behind "show images". Falls back to the web address if an image can't be fetched.
+ */
+function inlineImages_(html) {
+  var images = {};
+  html = html.replace(/https:\/\/hannahandlawrence\.(?:wedding|com)\/email\/([\w-]+)\.png/g, function (url, name) {
+    var blob = emailImage_(name);
+    if (!blob) return url;
+    images[name] = blob;
+    return 'cid:' + name;
+  });
+  return { html: html, images: images };
+}
+
+function emailImage_(name) {
+  try {
+    var cache = CacheService.getScriptCache(), key = 'img2_' + name;
+    var b64 = cache.get(key);
+    if (!b64) {
+      var res = UrlFetchApp.fetch(EMAIL.IMAGES + name + '.png', { muteHttpExceptions: true });
+      if (res.getResponseCode() !== 200) return null;
+      b64 = Utilities.base64Encode(res.getContent());
+      cache.put(key, b64, 21600);
+    }
+    return Utilities.newBlob(Utilities.base64Decode(b64), 'image/png', name + '.png');
+  } catch (e) { console.error(e); return null; }
+}
+
+/** The card every email sits in: ivory, inside a fine double gold rule, on bottle green, with a posy in the corner. */
 function emailShell_(inner, preheader, footer) {
   var e = EMAIL;
   return '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">' +
     '<meta name="viewport" content="width=device-width,initial-scale=1">' +
     '<meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only">' +
     '<style>:root{color-scheme:light only}body{margin:0;padding:0}a{color:' + e.GREEN + '}' +
-    '@media (max-width:480px){.outer{padding:20px 10px !important}.inner{padding:6px 18px 8px !important}}</style></head>' +
+    '@media (max-width:480px){.outer{padding:20px 10px !important}.inner{padding:28px 18px 0 !important}}</style></head>' +
     '<body style="margin:0;padding:0;background:' + e.SURROUND + '">' +
     '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:' + e.SURROUND + '">' + esc_(preheader || '') + '&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>' +
     '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="' + e.SURROUND + '" style="background:' + e.SURROUND + '"><tr>' +
@@ -158,14 +190,13 @@ function emailShell_(inner, preheader, footer) {
       // the card: outer gold rule, a sliver of ivory, inner gold rule
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="' + e.IVORY + '" style="max-width:480px;background:' + e.IVORY + ';border:1px solid ' + e.GOLD + ';border-radius:16px"><tr><td style="padding:5px">' +
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ' + e.GOLD + ';border-radius:12px">' +
-      '<tr><td align="left" style="padding:8px 0 0 8px;font-size:0;line-height:0"><img src="' + e.IMAGES + 'sprig-tl.png" width="132" height="48" alt="" style="display:block;border:0;outline:none;width:132px;height:auto"></td></tr>' +
-      '<tr><td align="center" class="inner" style="padding:8px 32px 10px">' +
+      '<tr><td align="center" class="inner" style="padding:34px 32px 0">' +
         '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' +
         '<tr><td align="center" style="font-family:' + e.SERIF + ';font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:' + e.GOLD + '">Hannah &amp; Lawrence</td></tr>' +
         inner +
         '</table>' +
       '</td></tr>' +
-      '<tr><td align="right" style="padding:0 8px 8px 0;font-size:0;line-height:0"><img src="' + e.IMAGES + 'sprig-br.png" width="132" height="48" alt="" style="display:block;border:0;outline:none;width:132px;height:auto;margin-left:auto"></td></tr>' +
+      cardFoot_() +
       '</table>' +
       '</td></tr></table>' +
       // small print, outside the card

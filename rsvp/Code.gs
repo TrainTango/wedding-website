@@ -23,7 +23,7 @@ var CONFIG = {
   LOOKUPS_PER_MINUTE: 40,            // gentle limit on name lookups across the whole site
 
   // Emails
-  SITE: 'https://hannahandlawrence.com',
+  SITE: 'https://hannahandlawrence.wedding',   // the address guests see in emails
   FROM_NAME: 'Hannah & Lawrence',
   FROM_ADDRESS: 'hello@hannahandlawrence.com',  // guests see and reply to this address
   SEND_CONFIRMATIONS: true,          // a copy of their reply, sent to the email they give

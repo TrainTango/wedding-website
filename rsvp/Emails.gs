@@ -3,7 +3,7 @@
  * Style: "Engraved card". Ivory, bottle green and antique gold, centred like a letterpress card.
  *
  * Kept in its own file so the wording and design can change without touching Code.gs.
- * Images are served from the website: hannahandlawrence.com/email/
+ * Links use CONFIG.SITE (hannahandlawrence.wedding). Images load from hannahandlawrence.com/email/.
  */
 
 var EMAIL = {
@@ -153,7 +153,7 @@ function emailShell_(inner, preheader, footer) {
       inner +
       '<tr><td style="padding:26px 0 0;border-bottom:1px solid ' + e.GOLD + ';font-size:0;line-height:0">&nbsp;</td></tr>' +
       '<tr><td align="center" style="padding:18px 6px 0;font-family:' + e.SERIF + ';font-size:13px;line-height:1.6;color:' + e.MUTED + '">' + footer + '</td></tr>' +
-      '<tr><td align="center" style="padding:14px 0 0;font-family:' + e.SERIF + ';font-size:12px;letter-spacing:.08em;color:' + e.MUTED + '"><a href="' + CONFIG.SITE + '" style="color:' + e.MUTED + ';text-decoration:none">hannahandlawrence.com</a></td></tr>' +
+      '<tr><td align="center" style="padding:14px 0 0;font-family:' + e.SERIF + ';font-size:12px;letter-spacing:.08em;color:' + e.MUTED + '"><a href="' + CONFIG.SITE + '" style="color:' + e.MUTED + ';text-decoration:none">' + CONFIG.SITE.replace(/^https?:\/\//, '') + '</a></td></tr>' +
       '</table>' +
     '</td></tr></table></body></html>';
 }

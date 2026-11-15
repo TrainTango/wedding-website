@@ -33,8 +33,8 @@ var CONFIG = {
 };
 
 // Reply columns, added to the right of the guest list if they aren't there yet.
-var REPLY_COLS = ['RSVP', 'Friday', 'Sunday', 'Dietary & access', 'Song request',
-  'Plus-one name', 'Reply email', 'Message to us', 'Replied by', 'Replied at', 'Reminded at'];
+var REPLY_COLS = ['RSVP', 'Friday', 'Sunday', 'Dietary & access', 'Reply email',
+  'Replied by', 'Replied at', 'Reminded at'];
 
 var ACCEPT = 'Joyfully accepts', DECLINE = 'Regretfully declines';
 
@@ -89,13 +89,10 @@ function buildFound(table, me, sign) {
     return {
       id: r.row,
       first: String(r.cells[c['First name']]).trim(),
-      plusOne: /^y/i.test(String(r.cells[c['Plus-one allowed?']] || '')),
       replied: !!rsvp,
       rsvp: rsvp === ACCEPT ? 'yes' : rsvp === DECLINE ? 'no' : '',
       friday: /^y/i.test(String(r.cells[c['Friday']] || '')),
       sunday: /^y/i.test(String(r.cells[c['Sunday']] || '')),
-      song: String(r.cells[c['Song request']] || ''),
-      plusOneName: String(r.cells[c['Plus-one name']] || ''),
       dietaryOnFile: !!String(r.cells[c['Dietary & access']] || '').trim()
     };
   });
@@ -156,9 +153,6 @@ function applySubmit(table, claim, req, now) {
     put(r, 'RSVP', yes ? ACCEPT : DECLINE);
     put(r, 'Friday', yes && p.friday ? 'Yes' : '');
     put(r, 'Sunday', yes && p.sunday ? 'Yes' : '');
-    put(r, 'Song request', yes ? clip(p.song, 200) : '');
-    if (r.cells[c['Plus-one allowed?']] && /^y/i.test(String(r.cells[c['Plus-one allowed?']])))
-      put(r, 'Plus-one name', yes ? clip(p.plusOneName, 120) : '');
     var diet = clip(p.dietary, 500);
     if (diet) {
       // Write-only: add to what's there, never shown back to the guest.
@@ -176,22 +170,19 @@ function applySubmit(table, claim, req, now) {
   } else {
     email = storedEmail_(replier, c);
   }
-  var msg = clip(req.message, 1000);
-  if (msg) put(replier, 'Message to us', msg);
   var answered = people.filter(function (p) { return p.rsvp === 'yes' || p.rsvp === 'no'; });
   var confirm = email ? {
     to: email,
     coming: coming,
     people: answered.map(function (p) {
       return { first: String(allowed[p.id].cells[c['First name']]).trim(), yes: p.rsvp === 'yes',
-        friday: p.rsvp === 'yes' && !!p.friday, sunday: p.rsvp === 'yes' && !!p.sunday,
-        plusOne: p.rsvp === 'yes' ? clip(p.plusOneName, 120) : '' };
+        friday: p.rsvp === 'yes' && !!p.friday, sunday: p.rsvp === 'yes' && !!p.sunday };
     })
   } : null;
   return { ok: true, writes: writes, coming: coming, confirm: confirm,
     log: { at: stamp, household: String(replier.cells[c['Household']] || '').trim(),
       by: String(replier.cells[c['First name']]).trim() + ' ' + String(replier.cells[c['Surname']]).trim(),
-      summary: summary.join('; '), message: msg ? 'Yes' : '' } };
+      summary: summary.join('; ') } };
 }
 
 /* ---------------- emails ---------------- */
@@ -317,8 +308,8 @@ function scheduleReminders() {
 function sendSampleEmails() {
   var me = Session.getEffectiveUser().getEmail();
   send_(me, confirmationEmail({ coming: true, people: [
-    { first: 'Alex', yes: true, friday: true, sunday: true, plusOne: '' },
-    { first: 'Sam', yes: true, friday: false, sunday: true, plusOne: '' }] }));
+    { first: 'Alex', yes: true, friday: true, sunday: true },
+    { first: 'Sam', yes: true, friday: false, sunday: true }] }));
   send_(me, confirmationEmail({ coming: false, people: [{ first: 'Alex', yes: false }] }));
   send_(me, reminderEmail(['Alex', 'Sam']));
   console.log('Three sample emails sent to ' + me + '.');
@@ -414,11 +405,11 @@ function logReply_(log) {
   var sheet = ss.getSheetByName(CONFIG.LOG_TAB);
   if (!sheet) {
     sheet = ss.insertSheet(CONFIG.LOG_TAB);
-    sheet.appendRow(['Replied at', 'Household', 'Replied by', 'Replies', 'Message?']);
-    sheet.getRange(1, 1, 1, 5).setFontWeight('bold').setBackground('#1E3829').setFontColor('#FFFFFF');
+    sheet.appendRow(['Replied at', 'Household', 'Replied by', 'Replies']);
+    sheet.getRange(1, 1, 1, 4).setFontWeight('bold').setBackground('#1E3829').setFontColor('#FFFFFF');
     sheet.setFrozenRows(1);
   }
-  sheet.appendRow([log.at, log.household, log.by, log.summary, log.message]);
+  sheet.appendRow([log.at, log.household, log.by, log.summary]);
 }
 
 /** Optional: set a Script Property NOTIFY_EMAIL to get an email for every reply. */
@@ -426,7 +417,7 @@ function notify_(log) {
   var to = PropertiesService.getScriptProperties().getProperty('NOTIFY_EMAIL');
   if (!to) return;
   try {
-    MailApp.sendEmail(to, 'New RSVP: ' + log.by, log.summary + (log.message ? '\n\nThey left you a message: see the sheet.' : ''));
+    MailApp.sendEmail(to, 'New RSVP: ' + log.by, log.summary);
   } catch (e) { console.error(e); }
 }
 

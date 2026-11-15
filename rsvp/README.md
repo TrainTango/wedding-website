@@ -11,7 +11,7 @@ Replies are written straight into the private "Wedding Spreadsheet" Google Sheet
 ## 2. Run the setup once
 1. In the toolbar, choose the function **setup** and click **Run**.
 2. Google asks for permission to let the script use your spreadsheet. Click through and allow it (you may need **Advanced → Go to project**, because it's your own unpublished script).
-3. Back in the sheet, the reply columns now appear on the right of the Guest list: RSVP, Friday, Sunday, Dietary & access, Song request, Plus-one name, Reply email, Message to us, Replied by, Replied at.
+3. Back in the sheet, the reply columns now appear on the right of the Guest list: RSVP, Friday, Sunday, Dietary & access, Reply email, Replied by, Replied at, Reminded at.
 
 ## 3. Publish it for the website
 1. Click **Deploy → New deployment**.

@@ -25,14 +25,14 @@ If an element passes neither, cut it.
 - Short. Guests should be able to read each email in under 20 seconds.
 
 ## The three emails
-Keep the facts and logic of the current copy. You may improve the wording, as long as it says the same things.
+Keep the facts and logic of the current copy. The RSVP form no longer asks for song requests, plus-one names or a note to us, so none of these appear. You may improve the wording, as long as it says the same things.
 
 **1. "See you at Markree"** (sent when anyone in the reply is coming)
 - Greeting to everyone the reply covers, e.g. "Dear Lee and Jenny".
 - Thank you, and joy that they'll be with us at Markree Castle on Saturday 18 September 2027.
 - "Here's what we have": one line per person, e.g.
   - "Lee: joyfully accepts, plus Friday drinks and Sunday"
-  - "Jenny: joyfully accepts, with Sam" (plus-one)
+  - "Jenny: joyfully accepts"
   - "Ann: regretfully declines"
 - Guests arrive from 2pm, and it's black tie. More about the weekend (travel, where to stay) will follow on the website.
 - They can update their reply until 1 March 2027 at hannahandlawrence.com/#rsvp. The password is on their invitation.
@@ -85,7 +85,7 @@ Include the illustration of Fionn, Markree's resident Irish wolfhound, which sit
 - Buttons must be bulletproof: built from table cells, not images, with at least a 44px tap height.
 - Every link uses the full URL `https://hannahandlawrence.com/...`.
 - Every email must have a plain-text version that reads well on its own.
-- Escape every guest-supplied value (names, plus-one names) before putting it into the HTML.
+- Escape every guest-supplied value (names) before putting it into the HTML.
 
 ## How to work
 1. **Show three short directions first**, before building anything, for example:

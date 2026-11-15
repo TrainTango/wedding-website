@@ -8,6 +8,8 @@
 
 var EMAIL = {
   IVORY: '#FBF8F1',
+  SURROUND: '#1E3829',   // bottle green, like the back of the invitation
+  ON_GREEN: '#C9D2C3',
   GREEN: '#1E3829',
   GOLD: '#B8925A',
   MUTED: '#5E6F63',
@@ -32,20 +34,21 @@ function confirmationEmail(info) {
   if (info.coming) {
     subject = 'See you at Markree';
     title = 'See you at Markree';
-    opening = 'thank you for replying, we can’t wait to celebrate with you.';
+    opening = 'Thank you for replying, we can’t wait to celebrate with you.';
     preheader = names + ', we can’t wait to celebrate with you.';
     body = 'Guests arrive from 2pm, and it’s black tie. More about the weekend will follow on our website.';
   } else {
     subject = 'Thank you for letting us know';
     title = 'We’ll miss you';
-    opening = 'thank you for letting us know. We’ll raise a glass to you at Markree.';
+    opening = 'Thank you for letting us know. We’ll miss you, and we’ll raise a glass to you at Markree.';
     preheader = 'Thank you for letting us know, ' + names + '.';
     body = '';
   }
 
   var text = [
     'Dear ' + names + ',',
-    opening.charAt(0).toUpperCase() + opening.slice(1),
+    '',
+    opening,
     '',
     'Here’s what we have:'
   ].concat(rows.map(function (r) { return '  ' + r.name + ': ' + r.status.toLowerCase() + (r.extra ? ', plus ' + r.extra.replace(/ too$/, '') : ''); }),
@@ -57,16 +60,19 @@ function confirmationEmail(info) {
   var rowHtml = rows.map(function (r) {
     return '<tr><td align="center" style="padding:14px 0;border-top:1px solid ' + e.RULE + ';font-family:' + e.SERIF + ';color:' + e.GREEN + '">' +
       '<span style="font-size:22px;line-height:1.3">' + esc_(r.name) + '</span><br>' +
-      '<span style="font-size:15px;line-height:1.5;font-style:italic;color:' + e.MUTED + '">' + r.status + (r.extra ? ' &middot; ' + r.extra : '') + '</span>' +
+      '<span style="font-size:15px;line-height:1.5;font-style:italic;color:' + e.MUTED + '">' + r.status + (r.extra ? '<br>' + r.extra : '') + '</span>' +
       '</td></tr>';
   }).join('');
 
+  // A lone "regretfully declines" would only repeat the sentence above it.
+  var showList = info.coming || rows.length > 1;
   var inner =
-    titleBlock_(title, 'Saturday 18 September 2027') +
-    para_('Dear ' + esc_(names) + ',<br>' + esc_(opening), 17, '0 6px') +
-    '<tr><td align="center" style="padding:30px 0 12px;font-family:' + e.SERIF + ';font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:' + e.GOLD + '">Here’s what we have</td></tr>' +
+    titleBlock_(title) +
+    para_('Dear ' + esc_(names) + ',', 18, '0 6px') +
+    para_(esc_(opening), 17, '10px 6px 0') +
+    (showList ? '<tr><td align="center" style="padding:30px 0 12px;font-family:' + e.SERIF + ';font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:' + e.GOLD + '">Here’s what we have</td></tr>' +
     '<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' + rowHtml +
-      '<tr><td style="border-top:1px solid ' + e.RULE + ';font-size:0;line-height:0">&nbsp;</td></tr></table></td></tr>' +
+      '<tr><td style="border-top:1px solid ' + e.RULE + ';font-size:0;line-height:0">&nbsp;</td></tr></table></td></tr>' : '') +
     (body ? para_(esc_(body).replace('our website', '<a href="' + CONFIG.SITE + '" style="color:' + e.GREEN + '">our website</a>'), 16, '26px 6px 0') : '') +
     signOff_() +
     fionn_('22px 0 0');
@@ -82,9 +88,9 @@ function reminderEmail(firstNames) {
   var e = EMAIL;
   var subject = 'A gentle reminder: replies by 1 March';
   var preheader = 'We’d love to know whether you can join us at Markree.';
-  var opening = 'we’d love to know whether you can join us at Markree Castle. Replies close on 1 March, and it only takes a minute.';
+  var opening = 'We’d love to know whether you can join us at Markree Castle. Replies close on 1 March, and it only takes a minute.';
 
-  var text = ['Dear ' + names + ',', opening.charAt(0).toUpperCase() + opening.slice(1), '',
+  var text = ['Dear ' + names + ',', '', opening, '',
     'Reply here: ' + replyUrl + ' (the password is on your invitation).', '',
     'With love,', 'Hannah & Lawrence', '',
     'If you’ve already let us know another way, thank you, and please ignore this.'].join('\n');
@@ -99,8 +105,9 @@ function reminderEmail(firstNames) {
     para_('The password is on your invitation.', 14, '12px 6px 0', e.MUTED, true);
 
   var inner =
-    titleBlock_('Will you join us?', 'Saturday 18 September 2027') +
-    para_('Dear ' + esc_(names) + ',<br>' + esc_(opening), 17, '0 6px') +
+    titleBlock_('Will you join us?') +
+    para_('Dear ' + esc_(names) + ',', 18, '0 6px') +
+    para_(esc_(opening), 17, '10px 6px 0') +
     button +
     fionn_('20px 0 0') +
     signOff_('14px 0 0');
@@ -111,11 +118,11 @@ function reminderEmail(firstNames) {
 
 /* ---------------- building blocks ---------------- */
 
-function titleBlock_(title, date) {
+function titleBlock_(title) {
   var e = EMAIL;
   return '<tr><td align="center" style="padding:18px 0 6px"><img src="' + e.IMAGES + 'knot.png" width="160" height="28" alt="" style="display:block;border:0;outline:none;width:160px;height:auto"></td></tr>' +
     '<tr><td align="center" style="padding:14px 0 0;font-family:' + e.SERIF + ';font-size:30px;line-height:1.2;font-weight:normal;color:' + e.GREEN + '">' + esc_(title) + '</td></tr>' +
-    '<tr><td align="center" style="padding:6px 0 28px;font-family:' + e.SERIF + ';font-size:16px;font-style:italic;color:' + e.MUTED + '">' + esc_(date) + '</td></tr>';
+    '<tr><td align="center" style="padding:8px 0 30px;font-family:' + e.SERIF + ';font-size:15px;line-height:1.5;font-style:italic;color:' + e.MUTED + '">Saturday 18 September 2027<br>Markree Castle, Co. Sligo</td></tr>';
 }
 
 function para_(html, size, padding, color, italic) {
@@ -136,24 +143,35 @@ function fionn_(padding) {
     'style="display:block;border:0;outline:none;width:96px;height:auto;font-family:' + e.SERIF + ';font-size:12px;font-style:italic;color:' + e.MUTED + '"></td></tr>';
 }
 
-/** The card every email sits in. */
+/** The card every email sits in: ivory, inside a fine double gold rule, on bottle green. */
 function emailShell_(inner, preheader, footer) {
   var e = EMAIL;
   return '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">' +
     '<meta name="viewport" content="width=device-width,initial-scale=1">' +
     '<meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only">' +
     '<style>:root{color-scheme:light only}body{margin:0;padding:0}a{color:' + e.GREEN + '}' +
-    '@media (max-width:480px){.card-pad{padding:32px 16px !important}}</style></head>' +
-    '<body style="margin:0;padding:0;background:' + e.IVORY + '">' +
-    '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:' + e.IVORY + '">' + esc_(preheader || '') + '&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>' +
-    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="' + e.IVORY + '" style="background:' + e.IVORY + '"><tr>' +
-    '<td align="center" class="card-pad" style="padding:44px 20px">' +
-      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px">' +
-      '<tr><td align="center" style="font-family:' + e.SERIF + ';font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:' + e.GOLD + '">Hannah &amp; Lawrence</td></tr>' +
-      inner +
-      '<tr><td style="padding:26px 0 0;border-bottom:1px solid ' + e.GOLD + ';font-size:0;line-height:0">&nbsp;</td></tr>' +
-      '<tr><td align="center" style="padding:18px 6px 0;font-family:' + e.SERIF + ';font-size:13px;line-height:1.6;color:' + e.MUTED + '">' + footer + '</td></tr>' +
-      '<tr><td align="center" style="padding:14px 0 0;font-family:' + e.SERIF + ';font-size:12px;letter-spacing:.08em;color:' + e.MUTED + '"><a href="' + CONFIG.SITE + '" style="color:' + e.MUTED + ';text-decoration:none">' + CONFIG.SITE.replace(/^https?:\/\//, '') + '</a></td></tr>' +
+    '@media (max-width:480px){.outer{padding:20px 10px !important}.inner{padding:6px 18px 8px !important}}</style></head>' +
+    '<body style="margin:0;padding:0;background:' + e.SURROUND + '">' +
+    '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:' + e.SURROUND + '">' + esc_(preheader || '') + '&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="' + e.SURROUND + '" style="background:' + e.SURROUND + '"><tr>' +
+    '<td align="center" class="outer" style="padding:44px 20px">' +
+      // the card: outer gold rule, a sliver of ivory, inner gold rule
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="' + e.IVORY + '" style="max-width:480px;background:' + e.IVORY + ';border:1px solid ' + e.GOLD + '"><tr><td style="padding:5px">' +
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ' + e.GOLD + '">' +
+      '<tr><td align="left" style="padding:8px 0 0 8px;font-size:0;line-height:0"><img src="' + e.IMAGES + 'sprig-tl.png" width="132" height="48" alt="" style="display:block;border:0;outline:none;width:132px;height:auto"></td></tr>' +
+      '<tr><td align="center" class="inner" style="padding:8px 32px 10px">' +
+        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' +
+        '<tr><td align="center" style="font-family:' + e.SERIF + ';font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:' + e.GOLD + '">Hannah &amp; Lawrence</td></tr>' +
+        inner +
+        '</table>' +
+      '</td></tr>' +
+      '<tr><td align="right" style="padding:0 8px 8px 0;font-size:0;line-height:0"><img src="' + e.IMAGES + 'sprig-br.png" width="132" height="48" alt="" style="display:block;border:0;outline:none;width:132px;height:auto;margin-left:auto"></td></tr>' +
+      '</table>' +
+      '</td></tr></table>' +
+      // small print, outside the card
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px"><tr>' +
+      '<td align="center" style="padding:22px 10px 0;font-family:' + e.SERIF + ';font-size:13px;line-height:1.6;color:' + e.ON_GREEN + '">' + footer.replace(/color:#1E3829/g, 'color:' + e.IVORY) + '</td></tr>' +
+      '<tr><td align="center" style="padding:12px 0 0;font-family:' + e.SERIF + ';font-size:12px;letter-spacing:.1em;color:' + e.ON_GREEN + '"><a href="' + CONFIG.SITE + '" style="color:' + e.ON_GREEN + ';text-decoration:none">' + CONFIG.SITE.replace(/^https?:\/\//, '') + '</a></td></tr>' +
       '</table>' +
     '</td></tr></table></body></html>';
 }

@@ -374,7 +374,7 @@ h2{margin:0 0 10px;text-align:center;font-family:var(--display);font-weight:400;
 .signup input::placeholder{color:#686D4D}
 .small-note{margin:14px 0 0;font-size:16px;font-style:italic;color:var(--moss-3)}
 
-footer{background:var(--paper);padding:112px 20px 56px;text-align:center}
+footer{background:var(--paper);padding:40px 20px 56px;text-align:center}
 /* The wolfhound: tap for a curious head tilt and a wag (~1.8s). Three layers cut from the save the date drawing. */
 .hound{position:relative;display:block;width:150px;aspect-ratio:415/354;margin:0 0 14px;padding:0;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .hound img{position:absolute;inset:0;width:100%;height:100%}
@@ -386,12 +386,12 @@ footer{background:var(--paper);padding:112px 20px 56px;text-align:center}
 @keyframes tilt{0%{transform:rotate(0)}18%{transform:rotate(-9deg)}60%{transform:rotate(-9deg)}72%{transform:rotate(3deg)}100%{transform:rotate(0)}}
 @keyframes wag{0%,100%{transform:rotate(0)}12%{transform:rotate(-12deg)}26%{transform:rotate(9deg)}40%{transform:rotate(-12deg)}54%{transform:rotate(9deg)}68%{transform:rotate(-10deg)}82%{transform:rotate(5deg)}}
 /* Speech bubble: a hairline outline with the words, fading in and out together as one */
-.hound-wrap{position:relative;width:150px;margin:0 auto}
-.bubble{position:absolute;bottom:calc(100% + 2px);left:-70px;width:260px;height:100px;margin:0;pointer-events:none;opacity:0}
+.hound-wrap{position:relative;width:150px;margin:0 auto;padding-top:110px}
+.bubble{position:absolute;top:0;left:-70px;width:260px;height:100px;margin:0;pointer-events:none;opacity:0}
 .bubble svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .bubble path{fill:none;stroke:var(--sage);stroke-width:1;stroke-linejoin:round;stroke-linecap:round}
 .bubble span{position:absolute;left:0;right:0;top:0;height:84px;display:flex;align-items:center;justify-content:center;padding:0 22px;
-  font-family:var(--display);font-style:italic;font-size:18px;line-height:1.3;color:var(--moss);text-align:center}
+  font-family:var(--display);font-style:italic;font-size:18px;line-height:1.3;color:var(--moss);text-align:center;white-space:pre-line;text-wrap:balance}
 .bubble.show{animation:bubbleLife 6s cubic-bezier(.4,0,.2,1) .6s both}
 @keyframes bubbleLife{0%{opacity:0;transform:translateY(6px)}16%{opacity:1;transform:translateY(0)}80%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-2px)}}
 @keyframes bob{0%,100%{transform:translateY(0)}20%{transform:translateY(-3px)}40%{transform:translateY(0)}}
@@ -985,7 +985,7 @@ a,button,[role="button"]{-webkit-tap-highlight-color:transparent}
 .tp section > h2,.tp section > .wrap > h2{margin-bottom:10px}
 section h2 + .lede{margin-top:0}
 /* 7. Footer breathes on phones, tighter on desktop */
-@media (max-width:700px){ footer{padding:96px 20px 48px} footer nav{gap:0 18px} }
+@media (max-width:700px){ footer{padding:32px 20px 48px} footer nav{gap:0 18px} }
 /* 8. Header: a hairline appears once you scroll */
 .site-header{transition:border-color .3s,background .3s}
 .site-header.scrolled{border-bottom-color:rgba(122,132,96,.35)}
@@ -1536,7 +1536,7 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
   hound.addEventListener('click',function(){
     hound.classList.remove('go'); bubble.classList.remove('show'); void hound.offsetWidth;
     hound.classList.add('go'); bubble.classList.add('show');
-    btext.textContent="Woof! We can\u2019t wait to see you in Sligo";
+    btext.textContent="Woof! We can\u2019t wait\nto see you in Sligo";
   });
   hound.addEventListener('animationend',function(e){ if(e.target===hound) hound.classList.remove('go'); });
 

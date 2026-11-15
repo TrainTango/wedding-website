@@ -6,6 +6,10 @@
  *   { action: "find",   first, last }          -> finds a guest and their household
  *   { action: "submit", token, people, ... }    -> writes their replies into the sheet
  *
+ * It also sends guests emails from your Google account:
+ *   - a copy of their reply, whenever they reply with an email address
+ *   - a gentle reminder in February to anyone who hasn't replied (see scheduleReminders)
+ *
  * The guest list never leaves Google. Lookups return only the first names of the
  * guest's own household, and never return dietary or access answers or emails.
  * Setup steps are in rsvp/README.md.
@@ -16,12 +20,20 @@ var CONFIG = {
   LOG_TAB: 'RSVP log',
   CLOSES: '2027-03-01T23:59:59Z',   // replies close at the end of 1 March 2027 (UK time)
   TOKEN_HOURS: 6,                    // how long a found invitation stays valid
-  LOOKUPS_PER_MINUTE: 40             // gentle limit on name lookups across the whole site
+  LOOKUPS_PER_MINUTE: 40,            // gentle limit on name lookups across the whole site
+
+  // Emails
+  SITE: 'https://hannahandlawrence.com',
+  FROM_NAME: 'Hannah & Lawrence',
+  SEND_CONFIRMATIONS: true,          // a copy of their reply, sent to the email they give
+  REMINDERS_FROM: '2027-02-01T00:00:00Z',  // reminders never go out before this
+  REMINDER_DATES: ['2027-02-08T10:00:00Z', '2027-02-24T10:00:00Z'],  // used by scheduleReminders()
+  REMINDER_GAP_DAYS: 10              // never remind the same household twice within this many days
 };
 
 // Reply columns, added to the right of the guest list if they aren't there yet.
 var REPLY_COLS = ['RSVP', 'Friday', 'Sunday', 'Dietary & access', 'Song request',
-  'Plus-one name', 'Reply email', 'Message to us', 'Replied by', 'Replied at'];
+  'Plus-one name', 'Reply email', 'Message to us', 'Replied by', 'Replied at', 'Reminded at'];
 
 var ACCEPT = 'Joyfully accepts', DECLINE = 'Regretfully declines';
 
@@ -111,7 +123,8 @@ function handleSubmit(req) {
     });
     logReply_(result.log);
     notify_(result.log);
-    return { ok: true, status: 'saved', coming: result.coming };
+    var emailed = sendConfirmation_(result.confirm);
+    return { ok: true, status: 'saved', coming: result.coming, emailed: emailed };
   } finally {
     lock.releaseLock();
   }
@@ -159,13 +172,208 @@ function applySubmit(table, claim, req, now) {
   var email = clip(req.email, 200);
   if (email && /.+@.+\..+/.test(email)) {
     people.forEach(function (p) { put(allowed[p.id], 'Reply email', email); });
+  } else {
+    email = storedEmail_(replier, c);
   }
   var msg = clip(req.message, 1000);
   if (msg) put(replier, 'Message to us', msg);
-  return { ok: true, writes: writes, coming: coming,
+  var answered = people.filter(function (p) { return p.rsvp === 'yes' || p.rsvp === 'no'; });
+  var confirm = email ? {
+    to: email,
+    coming: coming,
+    people: answered.map(function (p) {
+      return { first: String(allowed[p.id].cells[c['First name']]).trim(), yes: p.rsvp === 'yes',
+        friday: p.rsvp === 'yes' && !!p.friday, sunday: p.rsvp === 'yes' && !!p.sunday,
+        plusOne: p.rsvp === 'yes' ? clip(p.plusOneName, 120) : '' };
+    })
+  } : null;
+  return { ok: true, writes: writes, coming: coming, confirm: confirm,
     log: { at: stamp, household: String(replier.cells[c['Household']] || '').trim(),
       by: String(replier.cells[c['First name']]).trim() + ' ' + String(replier.cells[c['Surname']]).trim(),
       summary: summary.join('; '), message: msg ? 'Yes' : '' } };
+}
+
+/* ---------------- emails ---------------- */
+
+/** The address we already hold for a guest: their last reply email, else the one on the list. */
+function storedEmail_(r, c) {
+  var list = [c['Reply email'], c['Email (optional)'], c['Email']];
+  for (var i = 0; i < list.length; i++) {
+    if (list[i] == null) continue;
+    var v = String(r.cells[list[i]] || '').trim();
+    if (/.+@.+\..+/.test(v)) return v;
+  }
+  return '';
+}
+
+/** "Lee", "Lee and Jenny", "Ann, Bob and Cat" */
+function joinNames(names) {
+  if (names.length <= 1) return names.join('');
+  return names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+}
+
+function esc_(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/** Pure: subject, plain text and HTML for a reply confirmation. Exposed for testing. */
+function confirmationEmail(info) {
+  var names = joinNames(info.people.map(function (p) { return p.first; }));
+  var replyUrl = CONFIG.SITE + '/#rsvp';
+  var lines = info.people.map(function (p) {
+    if (!p.yes) return p.first + ': regretfully declines';
+    var extra = [];
+    if (p.friday) extra.push('Friday drinks');
+    if (p.sunday) extra.push('Sunday');
+    return p.first + ': joyfully accepts' + (extra.length ? ', plus ' + joinNames(extra) : '') +
+      (p.plusOne ? ', with ' + p.plusOne : '');
+  });
+  var intro, outro, subject;
+  if (info.coming) {
+    subject = 'See you at Markree';
+    intro = ['Thank you for replying. We’re so happy you’ll be with us at Markree Castle on Saturday 18 September 2027.'];
+    outro = ['Guests arrive from 2pm, and it’s black tie. Over the coming months we’ll add more to the website about the weekend, from travel to where to stay.'];
+  } else {
+    subject = 'Thank you for letting us know';
+    intro = ['Thank you for replying. We’ll miss you, and we’ll raise a glass to you at Markree.'];
+    outro = [];
+  }
+  var change = 'If anything changes, you can update your reply until 1 March 2027 at ' + replyUrl + ' (the password is on your invitation).';
+
+  var text = ['Dear ' + names + ',', ''].concat(intro, ['', 'Here’s what we have:'], lines.map(function (l) { return '  ' + l; }),
+    [''], outro, outro.length ? [''] : [], [change, '', 'With love,', 'Hannah & Lawrence']).join('\n');
+
+  var html = emailShell_(
+    '<p>Dear ' + esc_(names) + ',</p>' +
+    intro.map(function (t) { return '<p>' + esc_(t) + '</p>'; }).join('') +
+    '<p style="margin:24px 0 8px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#B8925A">Here’s what we have</p>' +
+    '<table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%">' +
+    lines.map(function (l) { return '<tr><td style="padding:8px 0;border-top:1px solid #E6DFCF">' + esc_(l) + '</td></tr>'; }).join('') +
+    '</table>' +
+    outro.map(function (t) { return '<p style="margin-top:24px">' + esc_(t) + '</p>'; }).join('') +
+    '<p style="margin-top:24px">If anything changes, you can <a href="' + replyUrl + '" style="color:#1E3829">update your reply</a> until 1 March 2027. The password is on your invitation.</p>');
+  return { subject: subject, text: text, html: html };
+}
+
+/** Pure: a reminder for a household that hasn't replied. Exposed for testing. */
+function reminderEmail(firstNames) {
+  var names = joinNames(firstNames);
+  var replyUrl = CONFIG.SITE + '/#rsvp';
+  var subject = 'A gentle reminder: replies by 1 March';
+  var body = 'We’d love to know whether you can join us at Markree Castle on Saturday 18 September 2027. ' +
+    'Replies close on 1 March, and it only takes a minute.';
+  var text = ['Dear ' + names + ',', '', body, '', 'Reply here: ' + replyUrl + ' (the password is on your invitation).', '',
+    'If you’ve already let us know another way, thank you, and please ignore this.', '', 'With love,', 'Hannah & Lawrence'].join('\n');
+  var html = emailShell_(
+    '<p>Dear ' + esc_(names) + ',</p><p>' + esc_(body) + '</p>' +
+    '<p style="margin:28px 0"><a href="' + replyUrl + '" style="display:inline-block;padding:12px 28px;background:#1E3829;color:#FBF8F1;text-decoration:none;letter-spacing:.08em">Reply now</a></p>' +
+    '<p>The password is on your invitation. If you’ve already let us know another way, thank you, and please ignore this.</p>');
+  return { subject: subject, text: text, html: html };
+}
+
+function emailShell_(inner) {
+  return '<div style="background:#FBF8F1;padding:32px 16px">' +
+    '<div style="max-width:520px;margin:0 auto;font-family:Georgia,\'Times New Roman\',serif;font-size:17px;line-height:1.6;color:#1E3829">' +
+    '<p style="text-align:center;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:#B8925A;margin:0 0 28px">Hannah &amp; Lawrence · 18 September 2027</p>' +
+    inner +
+    '<p style="margin-top:28px">With love,<br>Hannah &amp; Lawrence</p>' +
+    '<p style="margin-top:36px;text-align:center;font-size:13px;color:#6B7A70"><a href="' + CONFIG.SITE + '" style="color:#6B7A70">hannahandlawrence.com</a></p>' +
+    '</div></div>';
+}
+
+function send_(to, mail) {
+  var opts = { to: to, subject: mail.subject, body: mail.text, htmlBody: mail.html, name: CONFIG.FROM_NAME };
+  var replyTo = PropertiesService.getScriptProperties().getProperty('REPLY_TO');
+  if (replyTo) opts.replyTo = replyTo;
+  MailApp.sendEmail(opts);
+}
+
+function sendConfirmation_(info) {
+  if (!CONFIG.SEND_CONFIRMATIONS || !info || !info.people.length) return false;
+  try { send_(info.to, confirmationEmail(info)); return true; }
+  catch (e) { console.error(e); return false; }
+}
+
+/** Pure: who would get a reminder now. One email per address, greeting everyone in the household. */
+function reminderList(table, now) {
+  var c = table.col, groups = {}, order = [];
+  table.rows.forEach(function (r) {
+    if (!String(r.cells[c['First name']] || '').trim()) return;
+    var key = norm(r.cells[c['Household']]) || ('row' + r.row);
+    if (!groups[key]) { groups[key] = []; order.push(key); }
+    groups[key].push(r);
+  });
+  var out = [], seen = {};
+  order.forEach(function (key) {
+    var rows = groups[key];
+    if (rows.some(function (r) { return String(r.cells[c['RSVP']] || '').trim(); })) return;   // someone has replied
+    var recent = rows.some(function (r) {
+      var v = c['Reminded at'] != null ? r.cells[c['Reminded at']] : '';
+      var t = v instanceof Date ? v.getTime() : Date.parse(v);
+      return t && now.getTime() - t < CONFIG.REMINDER_GAP_DAYS * 864e5;
+    });
+    if (recent) return;
+    var to = '';
+    rows.some(function (r) { to = storedEmail_(r, c); return !!to; });
+    if (!to || seen[to.toLowerCase()]) return;
+    seen[to.toLowerCase()] = true;
+    out.push({ to: to, rows: rows.map(function (r) { return r.row; }),
+      names: rows.map(function (r) { return String(r.cells[c['First name']]).trim(); }) });
+  });
+  return out;
+}
+
+/** Sends reminders to everyone who hasn't replied. Normally run by scheduleReminders(). */
+function sendReminders() {
+  var now = new Date();
+  if (isClosed_() || now < new Date(CONFIG.REMINDERS_FROM)) { console.log('Not reminder time yet, so nothing was sent.'); return; }
+  var sheet = guestSheet_();
+  ensureReplyColumns_(sheet);
+  var table = readTable_(sheet), list = reminderList(table, now), sent = 0;
+  var col = table.col['Reminded at'] + 1;
+  list.forEach(function (g) {
+    try {
+      send_(g.to, reminderEmail(g.names));
+      g.rows.forEach(function (row) { sheet.getRange(row, col).setValue(now); });
+      sent++;
+    } catch (e) { console.error('Could not email ' + g.names.join(', ') + ': ' + e); }
+  });
+  console.log('Sent ' + sent + ' reminder' + (sent === 1 ? '' : 's') + '.');
+}
+
+/** Lists who would get a reminder if it went out now, without sending anything. */
+function previewReminders() {
+  var table = readTable_(guestSheet_());
+  var list = reminderList(table, new Date());
+  console.log(list.length + ' households would get a reminder:\n' +
+    list.map(function (g) { return joinNames(g.names); }).join('\n'));
+  var noEmail = 0, c = table.col;
+  table.rows.forEach(function (r) {
+    if (String(r.cells[c['First name']] || '').trim() && !String(r.cells[c['RSVP']] || '').trim() && !storedEmail_(r, c)) noEmail++;
+  });
+  console.log(noEmail + ' guests who haven’t replied have no email address in the sheet.');
+}
+
+/** Run once: sets reminders to go out automatically on CONFIG.REMINDER_DATES. */
+function scheduleReminders() {
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (t.getHandlerFunction() === 'sendReminders') ScriptApp.deleteTrigger(t);
+  });
+  CONFIG.REMINDER_DATES.forEach(function (d) {
+    ScriptApp.newTrigger('sendReminders').timeBased().at(new Date(d)).create();
+  });
+  console.log('Reminders scheduled for ' + CONFIG.REMINDER_DATES.join(' and ') + '.');
+}
+
+/** Sends you one of each email, so you can see exactly what guests will get. */
+function sendSampleEmails() {
+  var me = Session.getEffectiveUser().getEmail();
+  send_(me, confirmationEmail({ coming: true, people: [
+    { first: 'Alex', yes: true, friday: true, sunday: true, plusOne: '' },
+    { first: 'Sam', yes: true, friday: false, sunday: true, plusOne: '' }] }));
+  send_(me, confirmationEmail({ coming: false, people: [{ first: 'Alex', yes: false }] }));
+  send_(me, reminderEmail(['Alex', 'Sam']));
+  console.log('Three sample emails sent to ' + me + '.');
 }
 
 /* ---------------- matching ---------------- */

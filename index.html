@@ -1188,7 +1188,7 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
   <section id="weekend-days" class="evening" aria-labelledby="wdH">
     <div class="wrap">
       <h2 id="wdH">Friday and Sunday</h2>
-      <p class="lede">We’d love you to make a weekend of it. Details of Friday and Sunday, and what to wear for each, will follow with your invitation.</p>
+      <p class="lede">We’d love you to make a weekend of it.</p>
       <div class="days">
         <div class="day"><p class="caps">Friday 17</p><p class="what tbc">Details to follow</p></div>
         <div class="day main"><p class="caps">Saturday 18</p><p class="what">The wedding · 2pm</p></div>
@@ -1443,7 +1443,7 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
         </div>
         <div id="rsPeople"></div>
         <div class="rs-last" id="rsLast2">
-          <div class="rs-field"><label for="rsEmail">Email <span class="rs-small">So we can send you the details as they're confirmed.</span></label><input id="rsEmail" type="email" autocomplete="email" inputmode="email" enterkeyhint="done"></div>
+          <div class="rs-field"><label for="rsEmail">Email <span class="rs-small">We'll send you a copy of your reply, and the details as they're confirmed.</span></label><input id="rsEmail" type="email" autocomplete="email" inputmode="email" enterkeyhint="done"></div>
           <div class="rs-adds"><button type="button" class="rs-add" data-open="rsNoteWrap" data-focus="rsMsg">Add a note to us</button></div>
           <div class="rs-field" id="rsNoteWrap" hidden><label for="rsMsg">A note to us</label><textarea id="rsMsg" maxlength="1000" rows="3"></textarea></div>
         </div>
@@ -1880,7 +1880,7 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
     msg.className='rs-msg'; msg.textContent=''; btn.disabled=true; btn.textContent='Sending…';
     call({action:'submit',token:state.token,people:people,email:email,message:$('rsMsg').value.trim()}).then(function(r){
       btn.disabled=false; renderPeople();
-      if(r.status==='saved'){ done(r.coming, people); return; }
+      if(r.status==='saved'){ done(r.coming, people, r.emailed); return; }
       if(r.status==='closed'){ $('rsClosedText').textContent=closedText(); show('rsClosed'); return; }
       msg.className='rs-msg warn';
       if(r.status==='expired'||r.status==='changed'){ msg.textContent='That took a little while, so please find your invitation again. Sorry about that.'; setTimeout(function(){ show('rsFind'); },2400); }
@@ -1889,12 +1889,13 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
   });
 
   /* ---- the moment ---- */
-  function done(coming, people){
+  function done(coming, people, emailed){
     var names=people.filter(function(p){return p.rsvp==='yes';}).length;
     $('rsDoneTitle').textContent = coming ? "We can't wait to celebrate with you" : "We'll miss you";
     $('rsDoneLead').textContent = coming
       ? (names>1?'Your replies are safely with us.':'Your reply is safely with us.')+' Markree, the music and a very long dinner are waiting.'
       : "Thank you for letting us know. We'll raise a glass to you at Markree.";
+    if(emailed) $('rsDoneLead').textContent += ' A copy is on its way to your inbox.';
     $('rsDoneYes').hidden=!coming;
     if(coming){
       $('rsDays').textContent=Math.max(0,Math.ceil((WEDDING-Date.now())/864e5));

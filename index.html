@@ -1027,7 +1027,7 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
    <button type="submit">Come in</button>
   </form>
   <p class="g-msg" id="gateMsg" role="status"></p>
-  <p class="g-help">Can't find it? Message Hannah or Lawrence and we'll send it again.</p>
+  <p class="g-help">Can't find it? Email us at <a href="mailto:hello@hannahandlawrence.com">hello@hannahandlawrence.com</a> and we'll send it again.</p>
   </div>
 </div>
 <canvas class="confetti" id="confetti" aria-hidden="true" hidden></canvas>
@@ -1500,7 +1500,7 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
   </div>
   <p class="thanks">Go raibh maith agaibh</p>
   <nav aria-label="Footer">
-    <a href="#faq">FAQ</a><span>Questions? [contact email TBC]</span>
+    <a href="#faq">FAQ</a><span>Questions? <a href="mailto:hello@hannahandlawrence.com">hello@hannahandlawrence.com</a></span>
   </nav>
 </footer>
 
@@ -1775,7 +1775,7 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
 
   /* ---- step 1: find ---- */
   function closedText(){
-    if(Date.now()>CLOSES) return "Replies have now closed. If anything has changed, please message us.";
+    if(Date.now()>CLOSES) return "Replies have now closed. If anything has changed, please email us at hello@hannahandlawrence.com.";
     return "Our RSVP opens very soon. We'll let you know as soon as it does.";
   }
   function start(){
@@ -1793,9 +1793,9 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
       if(r.status==='found'){ state.token=r.token; state.people=r.people; state.you=r.you; state.misses=0; buildReply(r); return; }
       if(r.status==='closed'){ $('rsClosedText').textContent=closedText(); show('rsClosed'); return; }
       msg.className='rs-msg warn';
-      if(r.status==='ambiguous') msg.textContent="We found more than one guest with that name. Please message us and we'll sort it.";
+      if(r.status==='ambiguous') msg.textContent="We found more than one guest with that name. Please email us at hello@hannahandlawrence.com and we'll sort it.";
       else if(r.status==='busy') msg.textContent="Lots of people are replying right now. Please try again in a minute.";
-      else { state.misses++; msg.textContent = "We couldn't find that name. Try it exactly as it's written on your invitation." + (state.misses>1?" Still no luck? Message us and we'll sort it.":''); }
+      else { state.misses++; msg.textContent = "We couldn't find that name. Try it exactly as it's written on your invitation." + (state.misses>1?" Still no luck? Email us at hello@hannahandlawrence.com and we'll sort it.":''); }
     }).catch(function(err){ btn.disabled=false; btn.textContent='Find my invitation'; msg.className='rs-msg warn'; msg.textContent=failText(err); });
   });
 

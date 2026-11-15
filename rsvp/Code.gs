@@ -25,6 +25,7 @@ var CONFIG = {
   // Emails
   SITE: 'https://hannahandlawrence.com',
   FROM_NAME: 'Hannah & Lawrence',
+  FROM_ADDRESS: 'hello@hannahandlawrence.com',  // guests see and reply to this address
   SEND_CONFIRMATIONS: true,          // a copy of their reply, sent to the email they give
   REMINDERS_FROM: '2027-02-01T00:00:00Z',  // reminders never go out before this
   REMINDER_DATES: ['2027-02-08T10:00:00Z', '2027-02-24T10:00:00Z'],  // used by scheduleReminders()
@@ -281,10 +282,20 @@ function emailShell_(inner) {
     '</div></div>';
 }
 
+/**
+ * Sends from hello@ when this Google account has it set up under Gmail's "Send mail as".
+ * Otherwise it sends from the account itself, with replies still going to hello@.
+ */
 function send_(to, mail) {
+  var from = CONFIG.FROM_ADDRESS;
+  var aliases = [];
+  try { aliases = GmailApp.getAliases(); } catch (e) { /* no Gmail access: fall back below */ }
+  if (from && aliases.indexOf(from) >= 0) {
+    GmailApp.sendEmail(to, mail.subject, mail.text, { from: from, name: CONFIG.FROM_NAME, htmlBody: mail.html });
+    return;
+  }
   var opts = { to: to, subject: mail.subject, body: mail.text, htmlBody: mail.html, name: CONFIG.FROM_NAME };
-  var replyTo = PropertiesService.getScriptProperties().getProperty('REPLY_TO');
-  if (replyTo) opts.replyTo = replyTo;
+  if (from) opts.replyTo = from;
   MailApp.sendEmail(opts);
 }
 

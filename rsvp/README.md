@@ -25,7 +25,7 @@ Replies are written straight into the private "Wedding Spreadsheet" Google Sheet
 In Apps Script, go to **Project Settings → Script properties**, add `NOTIFY_EMAIL` with your email address, and save.
 
 ## Emails to guests
-The script sends emails from the Google account that owns the sheet, under the name "Hannah & Lawrence". Guests will see that account's address and replies come back to it. To have replies go elsewhere, add a Script property `REPLY_TO` with that address.
+Emails go out as "Hannah & Lawrence <hello@hannahandlawrence.com>" when the Google account that owns the sheet has hello@ set up under Gmail's **Send mail as**. If it doesn't, they come from that account's own address, and guests' replies still go to hello@.
 
 - **A copy of their reply** goes out automatically whenever someone replies and gives an email address (or already has one in the sheet). It lists each person's answer and how to change it. Dietary and access answers are never included.
 - **Reminders** go to households where nobody has replied yet and the sheet holds an email for someone in them. One email per address, greeting everyone in the household. Each is stamped in the "Reminded at" column.

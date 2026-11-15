@@ -1485,7 +1485,6 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
       <form class="rs-step" id="rsFind" novalidate>
         <div class="rs-field"><label for="rsFirst">First name</label><input id="rsFirst" type="text" autocomplete="given-name" autocapitalize="words" spellcheck="false" enterkeyhint="next" required></div>
         <div class="rs-field"><label for="rsLast">Surname</label><input id="rsLast" type="text" autocomplete="family-name" autocapitalize="words" spellcheck="false" enterkeyhint="go" required></div>
-        <p class="rs-hint">Just as it appears on your invitation.</p>
         <button class="btn" type="submit" id="rsFindBtn">Find my invitation</button>
         <p class="rs-msg" id="rsFindMsg" role="status"></p>
         <p class="rs-demo" id="rsDemo" hidden>Preview: <b>Alex Example</b> is a test couple. Nothing is saved for them.</p>
@@ -1867,7 +1866,7 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
       msg.className='rs-msg warn';
       if(r.status==='ambiguous') msg.textContent="We found more than one guest with that name. Please email us at hello@hannahandlawrence.com and we'll sort it.";
       else if(r.status==='busy') msg.textContent="Lots of people are replying right now. Please try again in a minute.";
-      else { state.misses++; msg.textContent = "We couldn't find that name. Try it exactly as it's written on your invitation." + (state.misses>1?" Still no luck? Email us at hello@hannahandlawrence.com and we'll sort it.":''); }
+      else { state.misses++; msg.textContent = "We couldn't find that name. Check the spelling, or try the first name you usually go by." + (state.misses>1?" Still no luck? Email us at hello@hannahandlawrence.com and we'll sort it.":''); }
     }).catch(function(err){ btn.disabled=false; btn.textContent='Find my invitation'; msg.className='rs-msg warn'; msg.textContent=failText(err); });
   });
 

@@ -258,12 +258,23 @@ footer nav span{flex-basis:100%;display:block;margin-top:6px;font-size:16px;colo
 .rs-diet textarea::placeholder{color:var(--moss-3);opacity:.75;font-style:italic}
 .rs .rs-adds{margin:0}
 .rs-their-email{margin-top:0}
-.rs-post{margin-top:14px}
+.rs-post{margin-top:0}
 /* the address: compact, town and postcode side by side */
 .rs-addr .rs-field{gap:4px;margin-bottom:10px}
 .rs-addr label{font-size:11px;letter-spacing:.18em}
 .rs-addr input[type=text]{min-height:46px;padding:10px 16px;font-size:17px}
 .rs-addr-row{grid-template-columns:1.25fr 1fr !important;align-items:start}
+
+/* printed invitation: a quiet tickbox row, not a button */
+.rs-check{position:relative;display:flex;align-items:flex-start;gap:14px;margin:22px 0 0;padding:20px 0 4px;border-top:1px solid var(--card-line,var(--paper));cursor:pointer}
+.rs-check input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.rs-box{flex:none;position:relative;width:24px;height:24px;margin-top:1px;border:1.5px solid var(--sage);border-radius:7px;background:var(--field);transition:background .2s,border-color .2s}
+.rs-box::after{content:"";position:absolute;left:7px;top:3px;width:6px;height:11px;border-right:2px solid var(--cream);border-bottom:2px solid var(--cream);transform:rotate(45deg) scale(.6);opacity:0;transition:opacity .2s,transform .2s}
+.rs-check input:checked+.rs-box{background:var(--moss);border-color:var(--moss)}
+.rs-check input:checked+.rs-box::after{opacity:1;transform:rotate(45deg) scale(1)}
+.rs-check input:focus-visible+.rs-box{outline:2px solid var(--moss);outline-offset:3px}
+.rs-check-t{font-family:var(--display);font-size:19px;line-height:1.3;color:var(--moss)}
+.rs-check-t small{display:block;margin-top:3px;font-family:var(--body);font-size:15px;font-style:italic;color:var(--moss-3)}
 /* printed invitation request */
 .rs-post{margin:4px 0 0}
 .rs-post-chip span{font-size:16px}
@@ -1503,7 +1514,7 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
           <div class="rs-field"><label for="rsEmail">Your email <span class="rs-small">We’ll send you a copy of your reply.</span></label><input id="rsEmail" type="email" autocomplete="email" inputmode="email" enterkeyhint="done"></div>
         
           <div class="rs-post">
-            <label class="rs-chip rs-post-chip"><input type="checkbox" id="rsPostOn"><span>I’d like a printed invitation by post</span></label>
+            <label class="rs-check"><input type="checkbox" id="rsPostOn"><span class="rs-box" aria-hidden="true"></span><span class="rs-check-t">I’d like a printed invitation by post<small>A keepsake, posted to you.</small></span></label>
             <p class="rs-small rs-post-note" id="rsPostNote" hidden>We already have an address for you. Only fill this in if it has changed.</p>
             <fieldset class="rs-addr" id="rsAddr" hidden>
               <legend class="sr-only">Postal address</legend>

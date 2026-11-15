@@ -3,7 +3,7 @@
  * Style: "Engraved card". Ivory, bottle green and antique gold, centred like a letterpress card.
  *
  * Kept in its own file so the wording and design can change without touching Code.gs.
- * Links use CONFIG.SITE (hannahandlawrence.wedding). Images load from hannahandlawrence.com/email/.
+ * Links use CONFIG.SITE (hannahandlawrence.wedding). Images load from hannahandlawrence.wedding/email/.
  */
 
 var EMAIL = {
@@ -15,7 +15,7 @@ var EMAIL = {
   MUTED: '#5E6F63',
   RULE: '#E6DFCF',
   SERIF: "Georgia,'Times New Roman',serif",
-  IMAGES: 'https://hannahandlawrence.com/email/'
+  IMAGES: 'https://hannahandlawrence.wedding/email/'
 };
 
 /** Pure: subject, plain text and HTML for a reply confirmation. */

@@ -1773,7 +1773,7 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
       .catch(function(err){ if(!LIVE) err.preview=true; throw err; });
   }
   function failText(err){
-    return err && err.preview ? "This preview can't reach the guest list. It will work on hannahandlawrence.com, or try Alex Example here."
+    return err && err.preview ? "This preview can't reach the guest list. It will work on hannahandlawrence.wedding, or try Alex Example here."
       : 'Something went wrong on our side. Please try again in a moment.';
   }
 
@@ -1900,9 +1900,9 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
       $('rsDays').textContent=Math.max(0,Math.ceil((WEDDING-Date.now())/864e5));
       var ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Hannah & Lawrence//Wedding//EN','BEGIN:VEVENT','UID:hl-wedding-20270918@hannahandlawrence.com','DTSTAMP:20261114T000000Z',
         'DTSTART;VALUE=DATE:20270918','DTEND;VALUE=DATE:20270919','SUMMARY:Hannah & Lawrence\'s wedding',
-        'LOCATION:Markree Castle\\, Collooney\\, Co. Sligo F91 AE81','DESCRIPTION:Arrive from 2pm. Black tie. hannahandlawrence.com','END:VEVENT','END:VCALENDAR'].join('\r\n');
+        'LOCATION:Markree Castle\\, Collooney\\, Co. Sligo F91 AE81','DESCRIPTION:Arrive from 2pm. Ceremony at 3pm. Black tie. hannahandlawrence.wedding','END:VEVENT','END:VCALENDAR'].join('\r\n');
       $('rsIcs').href='data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);
-      $('rsGcal').href='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent("Hannah & Lawrence's wedding")+'&dates=20270918/20270919&location='+encodeURIComponent('Markree Castle, Collooney, Co. Sligo F91 AE81')+'&details='+encodeURIComponent('Arrive from 2pm. Black tie. hannahandlawrence.com');
+      $('rsGcal').href='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent("Hannah & Lawrence's wedding")+'&dates=20270918/20270919&location='+encodeURIComponent('Markree Castle, Collooney, Co. Sligo F91 AE81')+'&details='+encodeURIComponent('Arrive from 2pm. Ceremony at 3pm. Black tie. hannahandlawrence.wedding');
     }
     show('rsDone');
     window.scrollTo({top:Math.max(0,$('rsDone').closest('.rs').getBoundingClientRect().top+scrollY-110),behavior:'smooth'});

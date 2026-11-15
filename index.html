@@ -1515,7 +1515,6 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
         
           <div class="rs-post">
             <label class="rs-check"><input type="checkbox" id="rsPostOn"><span class="rs-box" aria-hidden="true"></span><span class="rs-check-t">I’d like a printed invitation by post<small>A keepsake, posted to you.</small></span></label>
-            <p class="rs-small rs-post-note" id="rsPostNote" hidden>We already have an address for you. Only fill this in if it has changed.</p>
             <fieldset class="rs-addr" id="rsAddr" hidden>
               <legend class="sr-only">Postal address</legend>
               <div class="rs-field"><label for="rsA1">Address</label><input id="rsA1" type="text" autocomplete="address-line1" maxlength="120" enterkeyhint="next"></div>
@@ -1938,12 +1937,12 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
     $('rsEmail').value=''; $('rsSendMsg').textContent='';
     state.addressOnFile=!!r.addressOnFile;
     ['rsA1','rsA2','rsTown','rsPC'].forEach(function(id){ $(id).value=''; $(id).classList.remove('rs-bad'); }); $('rsCountry').value='United Kingdom';
-    $('rsPostOn').checked=!!r.printed; $('rsAddr').hidden=!r.printed; $('rsPostNote').hidden=!(r.printed && r.addressOnFile);
+    $('rsPostOn').checked=!!r.printed; $('rsAddr').hidden=!r.printed;
     show('rsReply'); window.scrollTo({top:Math.max(0,$('rsReply').getBoundingClientRect().top+scrollY-110),behavior:'smooth'});
   }
   $('rsOthersList').addEventListener('change',renderPeople);
   $('rsPostOn').addEventListener('change',function(){
-    var on=this.checked; $('rsAddr').hidden=!on; $('rsPostNote').hidden=!(on && state.addressOnFile);
+    var on=this.checked; $('rsAddr').hidden=!on;
     if(on && !state.addressOnFile) $('rsA1').focus();
   });
   $('rsReply').addEventListener('click',function(e){

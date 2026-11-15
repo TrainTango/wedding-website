@@ -1883,8 +1883,8 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
       '<div class="rs-more"'+(yes?'':' hidden')+'>'+
         '<p class="rs-q">Staying for the rest of the weekend?</p>'+
         '<div class="rs-chips">'+
-          '<label class="rs-chip"><input type="checkbox" data-k="friday"'+(p.friday?' checked':'')+'><span>Friday drinks</span></label>'+
-          '<label class="rs-chip"><input type="checkbox" data-k="sunday"'+(p.sunday?' checked':'')+'><span>Sunday</span></label>'+
+          '<label class="rs-chip"><input type="checkbox" data-k="friday"'+(p.friday||!p.replied?' checked':'')+'><span>Friday drinks</span></label>'+
+          '<label class="rs-chip"><input type="checkbox" data-k="sunday"'+(p.sunday||!p.replied?' checked':'')+'><span>Sunday</span></label>'+
         '</div>'+
         '<div class="rs-adds">'+
           '<button type="button" class="rs-add" data-open="rsDW'+id+'" data-focus="">'+(p.dietaryOnFile?'Add to dietary details':'Dietary or access needs')+'</button>'+

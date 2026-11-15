@@ -239,6 +239,14 @@ footer nav span{flex-basis:100%;display:block;margin-top:6px;font-size:16px;colo
 .view[data-view="rsvp"] section.wrap.rs{max-width:640px;margin-inline:auto;padding-top:4px}
 @media (min-width:900px){.view[data-view="rsvp"] section.wrap.rs{padding-top:16px}}
 
+
+/* dietary chips */
+.rs-diet{margin:4px 0 0;animation:rsIn .4s ease both}
+.rs-label{margin:0 0 8px;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--moss-3)}
+.rs-diet-chips{gap:6px;margin:0 0 16px}
+.rs-diet-chips .rs-chip span{min-height:38px;padding:0 13px;font-size:15px;gap:7px}
+.rs-diet-chips .rs-chip span::before{width:13px;height:13px}
+.rs-their-email{margin-top:10px}
 /* printed invitation request */
 .rs-post{margin:4px 0 0}
 .rs-post-chip span{font-size:16px}
@@ -1476,7 +1484,7 @@ nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:6px;t
         </div>
         <div id="rsPeople"></div>
         <div class="rs-last" id="rsLast2">
-          <div class="rs-field"><label for="rsEmail">Email <span class="rs-small">We'll send you a copy of your reply, and the details as they're confirmed.</span></label><input id="rsEmail" type="email" autocomplete="email" inputmode="email" enterkeyhint="done"></div>
+          <div class="rs-field"><label for="rsEmail">Your email <span class="rs-small">We'll send you a copy of your reply, and the details as they're confirmed.</span></label><input id="rsEmail" type="email" autocomplete="email" inputmode="email" enterkeyhint="done"></div>
         
           <div class="rs-post">
             <label class="rs-chip rs-post-chip"><input type="checkbox" id="rsPostOn"><span>I’d like a printed invitation by post</span></label>
@@ -1847,6 +1855,7 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
   });
 
   /* ---- step 2: reply ---- */
+  var DIETS=['Vegetarian','Vegan','Pescatarian','Gluten-free / coeliac','Dairy-free','Peanut allergy','Tree nut allergy','Shellfish allergy','Halal','Other'];
   function personCard(p){
     var id=p.id, yes=p.rsvp==='yes', no=p.rsvp==='no';
     return '<fieldset class="rs-person" data-id="'+id+'"><legend>'+esc(p.first)+'</legend>'+
@@ -1861,10 +1870,19 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
           '<label class="rs-chip"><input type="checkbox" data-k="sunday"'+(p.sunday?' checked':'')+'><span>Sunday</span></label>'+
         '</div>'+
         '<div class="rs-adds">'+
-          '<button type="button" class="rs-add" data-open="rsDW'+id+'" data-focus="rsD'+id+'">'+(p.dietaryOnFile?'Add to dietary details':'Dietary or access needs')+'</button>'+
+          '<button type="button" class="rs-add" data-open="rsDW'+id+'" data-focus="">'+(p.dietaryOnFile?'Add to dietary details':'Dietary or access needs')+'</button>'+
         '</div>'+
-        '<div class="rs-field" id="rsDW'+id+'" hidden><label for="rsD'+id+'">Dietary or access needs <span class="rs-small">'+(p.dietaryOnFile?'We have your details. Add anything new here.':'Only we see this.')+'</span></label><textarea id="rsD'+id+'" data-k="dietary" maxlength="500" rows="2"></textarea></div>'+
-      '</div></fieldset>';
+        '<div class="rs-diet" id="rsDW'+id+'" hidden>'+
+          '<p class="rs-label">Dietary needs <span class="rs-small">'+(p.dietaryOnFile?'We have your details. Add anything new here.':'Tap any that apply. Only we see this.')+'</span></p>'+
+          '<div class="rs-chips rs-diet-chips">'+DIETS.map(function(d){ return '<label class="rs-chip"><input type="checkbox" data-diet="'+d+'"><span>'+d+'</span></label>'; }).join('')+'</div>'+
+          '<div class="rs-field"><label for="rsD'+id+'">Anything else? <span class="rs-small">Allergies, other needs or access requirements.</span></label><textarea id="rsD'+id+'" data-k="dietNote" maxlength="400" rows="2"></textarea></div>'+
+        '</div>'+
+      '</div>'+
+      (id!==state.you ?
+        '<div class="rs-adds rs-their-email"><button type="button" class="rs-add" data-open="rsEW'+id+'" data-focus="rsE'+id+'">Add '+esc(p.first)+'’s email</button></div>'+
+        '<div class="rs-field" id="rsEW'+id+'" hidden><label for="rsE'+id+'">'+esc(p.first)+'’s email <span class="rs-small">Optional. We’ll send '+esc(p.first)+' a copy too.</span></label><input id="rsE'+id+'" type="email" data-k="email" autocomplete="off" inputmode="email" maxlength="200"></div>'
+        : '')+
+      '</fieldset>';
   }
   function list(names){ return names.length<2?names.join(''):names.slice(0,-1).join(', ')+' and '+names[names.length-1]; }
   function selected(){
@@ -1904,7 +1922,7 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
   $('rsReply').addEventListener('click',function(e){
     var b=e.target.closest('.rs-add'); if(!b) return;
     var box=$(b.dataset.open); box.hidden=false; b.hidden=true;
-    var f=$(b.dataset.focus); if(f) f.focus();
+    var f=b.dataset.focus && $(b.dataset.focus); if(f) f.focus();
   });
   $('rsPeople').addEventListener('change',function(e){
     if(e.target.type!=='radio') return;
@@ -1915,15 +1933,22 @@ document.addEventListener('keydown',function(e){if(!v.hidden){if(e.key==='Escape
   /* ---- send ---- */
   $('rsReply').addEventListener('submit',function(e){
     e.preventDefault();
-    var msg=$('rsSendMsg'), btn=$('rsSend'), people=[], missing=null;
+    var msg=$('rsSendMsg'), btn=$('rsSend'), people=[], missing=null, needDetail=null, badEmail=null;
     $('rsPeople').querySelectorAll('.rs-person').forEach(function(card){
       var c=card.querySelector('input[type=radio]:checked'), p={id:Number(card.dataset.id),rsvp:c?c.value:''};
       if(!c && !missing) missing=card;
       card.querySelectorAll('[data-k]').forEach(function(el){ p[el.dataset.k]= el.type==='checkbox'?el.checked:el.value.trim(); });
+      var diets=[].map.call(card.querySelectorAll('[data-diet]:checked'),function(el){ return el.dataset.diet; });
+      if(diets.indexOf('Other')>=0 && !p.dietNote && !needDetail) needDetail=card;
+      p.dietary=diets.filter(function(d){return d!=='Other';}).concat(p.dietNote?[p.dietNote]:[]).join('. ');
+      delete p.dietNote;
+      if(p.email && !/.+@.+\..+/.test(p.email) && !badEmail) badEmail=card;
       people.push(p);
     });
     msg.className='rs-msg warn';
     if(missing){ msg.textContent='Just let us know whether '+missing.querySelector('legend').textContent+' can make it.'; missing.scrollIntoView({behavior:'smooth',block:'center'}); return; }
+    if(needDetail){ msg.textContent='Please tell us a little more about “Other” for '+needDetail.querySelector('legend').textContent+'.'; needDetail.querySelector('textarea').focus(); return; }
+    if(badEmail){ msg.textContent='That email address for '+badEmail.querySelector('legend').textContent+' doesn’t look quite right.'; badEmail.querySelector('[data-k=email]').focus(); return; }
     var email=$('rsEmail').value.trim();
     if(email && !/.+@.+\..+/.test(email)){ msg.textContent='That email address doesn\'t look quite right.'; $('rsEmail').focus(); return; }
     var printed=$('rsPostOn').checked, address=null;

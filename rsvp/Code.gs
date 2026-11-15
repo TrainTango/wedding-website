@@ -174,6 +174,15 @@ function applySubmit(table, claim, req, now) {
   } else {
     email = storedEmail_(replier, c);
   }
+  // Anyone else in the reply can have their own email; it replaces the shared one for them only.
+  var recipients = email ? [email] : [];
+  people.forEach(function (p) {
+    var own = clip(p.email, 200);
+    if (p.id !== claim.by && own && /.+@.+\..+/.test(own)) {
+      put(allowed[p.id], 'Reply email', own);
+      if (recipients.map(function (x) { return x.toLowerCase(); }).indexOf(own.toLowerCase()) < 0) recipients.push(own);
+    }
+  });
   // A printed invitation by post: one per household, recorded on the row of the person replying.
   var printed = req.printed === true;
   if (printed) {
@@ -191,8 +200,8 @@ function applySubmit(table, claim, req, now) {
     put(replier, 'Printed invitation', '');   // they unticked it
   }
   var answered = people.filter(function (p) { return p.rsvp === 'yes' || p.rsvp === 'no'; });
-  var confirm = email ? {
-    to: email,
+  var confirm = recipients.length ? {
+    to: recipients,
     coming: coming,
     printed: printed,
     people: answered.map(function (p) {
@@ -249,10 +258,14 @@ function send_(to, mail) {
   MailApp.sendEmail(opts);
 }
 
+/** Sends the confirmation to each address separately, so nobody sees anyone else's email. */
 function sendConfirmation_(info) {
   if (!CONFIG.SEND_CONFIRMATIONS || !info || !info.people.length) return false;
-  try { send_(info.to, confirmationEmail(info)); return true; }
-  catch (e) { console.error(e); return false; }
+  var mail = confirmationEmail(info), sent = false;
+  [].concat(info.to).forEach(function (to) {
+    try { send_(to, mail); sent = true; } catch (e) { console.error(e); }
+  });
+  return sent;
 }
 
 /** Pure: who would get a reminder now. One email per address, greeting everyone in the household. */

@@ -114,8 +114,7 @@ function reminderEmail(firstNames) {
 
   var text = ['Dear ' + names + ',', '', opening, '',
     'Reply here: ' + replyUrl, '',
-    'With love,', 'Hannah & Lawrence', '',
-    'If you’ve already let us know another way, thank you, and please ignore this.'].join('\n');
+    'With love,', 'Hannah & Lawrence'].join('\n');
 
   var button =
     '<tr><td align="center" style="padding:30px 0 0">' +
@@ -132,8 +131,7 @@ function reminderEmail(firstNames) {
     button +
     signOff_('30px 0 0');
 
-  var footer = 'Already let us know another way? Thank you, and please ignore this.';
-  return { subject: subject, text: text, html: emailShell_(inner, preheader, footer) };
+  return { subject: subject, text: text, html: emailShell_(inner, preheader, '') };
 }
 
 /* ---------------- building blocks ---------------- */
@@ -267,9 +265,9 @@ function emailShell_(inner, preheader, footer) {
       '</table>' +
       '</td></tr></table>' +
       // small print, outside the card (on green in both modes)
-      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px"><tr>' +
-      '<td align="center" style="padding:22px 10px 0;font-family:' + e.SERIF + ';font-size:13px;line-height:1.6;color:' + e.ON_GREEN + '">' + footer + '</td></tr>' +
-      '<tr><td align="center" style="padding:12px 0 0;font-family:' + e.SERIF + ';font-size:12px;letter-spacing:.1em;color:' + e.ON_GREEN + '"><a href="' + CONFIG.SITE + '" style="color:' + e.ON_GREEN + ';text-decoration:none">' + CONFIG.SITE.replace(/^https?:\/\//, '') + '</a></td></tr>' +
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px">' +
+      (footer ? '<tr><td align="center" style="padding:22px 10px 0;font-family:' + e.SERIF + ';font-size:13px;line-height:1.6;color:' + e.ON_GREEN + '">' + footer + '</td></tr>' : '') +
+      '<tr><td align="center" style="padding:' + (footer ? '12px' : '22px') + ' 0 0;font-family:' + e.SERIF + ';font-size:12px;letter-spacing:.1em;color:' + e.ON_GREEN + '"><a href="' + CONFIG.SITE + '" style="color:' + e.ON_GREEN + ';text-decoration:none">' + CONFIG.SITE.replace(/^https?:\/\//, '') + '</a></td></tr>' +
       '</table>' +
     '</td></tr></table></body></html>';
 }

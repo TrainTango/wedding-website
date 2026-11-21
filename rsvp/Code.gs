@@ -27,6 +27,7 @@ var CONFIG = {
   FROM_NAME: 'Hannah & Lawrence',
   FROM_ADDRESS: 'hello@hannahandlawrence.com',  // guests see and reply to this address
   SEND_CONFIRMATIONS: true,          // a copy of their reply, sent to the email they give
+  SEND_REMINDERS: false,             // switched off: guests only ever get the confirmation of their reply
   REMINDERS_FROM: '2027-02-01T00:00:00Z',  // reminders never go out before this
   REMINDER_DATES: ['2027-02-08T10:00:00Z', '2027-02-24T10:00:00Z'],  // used by scheduleReminders()
   REMINDER_GAP_DAYS: 10              // never remind the same household twice within this many days
@@ -299,6 +300,7 @@ function reminderList(table, now) {
 
 /** Sends reminders to everyone who hasn't replied. Normally run by scheduleReminders(). */
 function sendReminders() {
+  if (!CONFIG.SEND_REMINDERS) { console.log('Reminders are switched off, so nothing was sent.'); return; }
   var now = new Date();
   if (isClosed_() || now < new Date(CONFIG.REMINDERS_FROM)) { console.log('Not reminder time yet, so nothing was sent.'); return; }
   var sheet = guestSheet_();
@@ -333,21 +335,21 @@ function scheduleReminders() {
   ScriptApp.getProjectTriggers().forEach(function (t) {
     if (t.getHandlerFunction() === 'sendReminders') ScriptApp.deleteTrigger(t);
   });
+  if (!CONFIG.SEND_REMINDERS) { console.log('Reminders are switched off. Nothing is scheduled.'); return; }
   CONFIG.REMINDER_DATES.forEach(function (d) {
     ScriptApp.newTrigger('sendReminders').timeBased().at(new Date(d)).create();
   });
   console.log('Reminders scheduled for ' + CONFIG.REMINDER_DATES.join(' and ') + '.');
 }
 
-/** Sends you one of each email, so you can see exactly what guests will get. */
+/** Sends you both confirmation emails (coming and not coming), so you can see exactly what guests will get. */
 function sendSampleEmails() {
   var me = Session.getEffectiveUser().getEmail();
   send_(me, confirmationEmail({ coming: true, people: [
     { first: 'Alex', yes: true, friday: true, sunday: true },
     { first: 'Sam', yes: true, friday: false, sunday: true }] }));
   send_(me, confirmationEmail({ coming: false, people: [{ first: 'Alex', yes: false }] }));
-  send_(me, reminderEmail(['Alex', 'Sam']));
-  console.log('Three sample emails sent to ' + me + '.');
+  console.log('Two sample emails sent to ' + me + '.');
 }
 
 /* ---------------- matching ---------------- */

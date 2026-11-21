@@ -168,11 +168,15 @@ function signOff_(padding) {
     'With love,<br><span class="tx" style="font-size:22px;color:' + e.TEXT + '">Hannah &amp; Lawrence</span></td></tr>';
 }
 
-/** The foot of the card: Fionn, drawn in gold so he reads on ivory and on green, under the sign-off. */
+/** The foot of the card: Fionn under the sign-off. Green ink in light mode, gold in dark mode so he still shows. */
 function cardFoot_() {
   var e = EMAIL;
-  return '<tr><td align="center" style="padding:24px 0 28px"><img src="' + e.IMAGES + 'fionn-gold.png" width="84" height="84" alt="Fionn, Markree’s wolfhound" ' +
-    'style="display:block;border:0;outline:none;width:84px;height:84px;font-family:' + e.SERIF + ';font-size:12px;font-style:italic;color:' + e.MUTED + '"></td></tr>';
+  var img = function (cls, file, display) {
+    return '<img class="' + cls + '" src="' + e.IMAGES + file + '" width="84" height="84" alt="Fionn, Markree’s wolfhound" ' +
+      'style="display:' + display + ';border:0;outline:none;width:84px;height:84px;font-family:' + e.SERIF + ';font-size:12px;font-style:italic;color:' + e.MUTED + '">';
+  };
+  return '<tr><td align="center" class="tx" style="padding:24px 0 28px;color:' + e.TEXT + '">' +
+    img('lt', 'fionn-light.png', 'block') + img('dk', 'fionn-gold.png', 'none') + '</td></tr>';
 }
 
 /** In 'corner' style, the posy tucked into the card's top-right corner. */

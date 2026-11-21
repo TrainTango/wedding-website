@@ -1,23 +1,37 @@
 /**
  * Hannah & Lawrence: the emails guests receive.
- * Style: "Engraved card" on bottle green: ivory ink and antique gold, centred like a letterpress card.
- * Dark-native, so phones in dark mode leave it as designed.
+ * Style: "Engraved card". Ivory, bottle green and antique gold, centred like a letterpress card.
+ *
+ * Light mode: an ivory card on bottle green.
+ * Dark mode: the same card in bottle green with ivory ink, set by us (not left to the inbox to invert).
+ *   - Apple Mail and iOS Mail follow the "prefers-color-scheme: dark" styles.
+ *   - Outlook (web, iPhone, Android) follows the [data-ogsc] / [data-ogsb] styles.
+ *   - Gmail and Yahoo apps ignore both and apply their own dark colours; nothing in an email can stop that.
  *
  * Kept in its own file so the wording and design can change without touching Code.gs.
- * Links use CONFIG.SITE (hannahandlawrence.wedding). Images load from hannahandlawrence.wedding/email/.
+ * Links use CONFIG.SITE (hannahandlawrence.wedding). Images load from hannahandlawrence.wedding/email/
+ * and are always attached to the email itself.
  */
 
 var EMAIL = {
-  // Dark-native "bottle green card": phones' dark modes leave a dark card alone,
-  // so it looks the same in light and dark mode (an ivory card turned muddy grey).
-  SURROUND: '#16281D',   // deep green around the card
-  CARD: '#1E3829',       // bottle green card
-  TEXT: '#F3EDDD',       // ivory ink
-  MUTED: '#BFC9B9',      // soft sage for secondary lines
-  GOLD: '#D3AF6E',       // antique gold rules and labels
-  RULE: '#3C5646',       // fine dividers on the card
-  ON_GREEN: '#A9B5A6',   // small print outside the card
-  BUTTON_TEXT: '#16281D',
+  // light mode
+  SURROUND: '#1E3829',   // bottle green around the card
+  CARD: '#FBF8F1',       // ivory card
+  TEXT: '#1E3829',       // bottle green ink
+  MUTED: '#5E6F63',
+  GOLD: '#B8925A',
+  RULE: '#E6DFCF',
+  ON_GREEN: '#C9D2C3',   // small print outside the card
+  LINK_ON_GREEN: '#FBF8F1',
+  // dark mode
+  D_SURROUND: '#16281D',
+  D_CARD: '#1E3829',
+  D_TEXT: '#F3EDDD',
+  D_MUTED: '#BFC9B9',
+  D_GOLD: '#D3AF6E',
+  D_RULE: '#3C5646',
+  D_BUTTON_TEXT: '#16281D',
+
   SERIF: "Georgia,'Times New Roman',serif",
   IMAGES: 'https://hannahandlawrence.wedding/email/',
   IMAGES_BACKUP: 'https://raw.githubusercontent.com/TrainTango/wedding-website/main/email/',  // used if the website can't be reached
@@ -66,9 +80,9 @@ function confirmationEmail(info) {
 
   var e = EMAIL;
   var rowHtml = rows.map(function (r) {
-    return '<tr><td align="center" style="padding:14px 0;border-top:1px solid ' + e.RULE + ';font-family:' + e.SERIF + ';color:' + e.TEXT + '">' +
-      '<span style="font-size:22px;line-height:1.3">' + esc_(r.name) + '</span><br>' +
-      '<span style="font-size:15px;line-height:1.5;font-style:italic;color:' + e.MUTED + '">' + r.status + (r.extra ? '<br>' + r.extra : '') + '</span>' +
+    return '<tr><td align="center" class="tx rl" style="padding:14px 0;border-top:1px solid ' + e.RULE + ';font-family:' + e.SERIF + ';color:' + e.TEXT + '">' +
+      '<span class="tx" style="font-size:22px;line-height:1.3;color:' + e.TEXT + '">' + esc_(r.name) + '</span><br>' +
+      '<span class="mu" style="font-size:15px;line-height:1.5;font-style:italic;color:' + e.MUTED + '">' + r.status + (r.extra ? '<br>' + r.extra : '') + '</span>' +
       '</td></tr>';
   }).join('');
 
@@ -78,14 +92,14 @@ function confirmationEmail(info) {
     titleBlock_(title) +
     para_('Dear ' + esc_(names) + ',', 18, '0 6px') +
     para_(esc_(opening), 17, '10px 6px 0') +
-    (showList ? '<tr><td align="center" style="padding:30px 0 12px;font-family:' + e.SERIF + ';font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:' + e.GOLD + '">Here’s what we have</td></tr>' +
+    (showList ? '<tr><td align="center" class="gd" style="padding:30px 0 12px;font-family:' + e.SERIF + ';font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:' + e.GOLD + '">Here’s what we have</td></tr>' +
     '<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' + rowHtml +
-      '<tr><td style="border-top:1px solid ' + e.RULE + ';font-size:0;line-height:0">&nbsp;</td></tr></table></td></tr>' : '') +
-    (body ? para_(esc_(body).replace('our website', '<a href="' + CONFIG.SITE + '" style="color:' + e.TEXT + '">our website</a>'), 16, '26px 6px 0') : '') +
-    (info.printed ? para_(esc_(POSTED_LINE), 16, '16px 6px 0', e.MUTED, true) : '') +
+      '<tr><td class="rl" style="border-top:1px solid ' + e.RULE + ';font-size:0;line-height:0">&nbsp;</td></tr></table></td></tr>' : '') +
+    (body ? para_(esc_(body).replace('our website', '<a href="' + CONFIG.SITE + '" class="tx" style="color:' + e.TEXT + '">our website</a>'), 16, '26px 6px 0') : '') +
+    (info.printed ? para_(esc_(POSTED_LINE), 16, '16px 6px 0', 'mu', true) : '') +
     signOff_();
 
-  var footer = 'Plans change? <a href="' + replyUrl + '" style="color:' + e.TEXT + '">Update your reply</a> until 1&nbsp;March&nbsp;2027.<br>The password is on your invitation.';
+  var footer = 'Plans change? <a href="' + replyUrl + '" style="color:' + e.LINK_ON_GREEN + '">Update your reply</a> until 1&nbsp;March&nbsp;2027.<br>The password is on your invitation.';
   return { subject: subject, text: text, html: emailShell_(inner, preheader, footer) };
 }
 
@@ -106,11 +120,11 @@ function reminderEmail(firstNames) {
   var button =
     '<tr><td align="center" style="padding:30px 0 0">' +
       '<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>' +
-      '<td align="center" bgcolor="' + e.GOLD + '" style="background:' + e.GOLD + ';border-radius:2px">' +
-        '<a href="' + replyUrl + '" style="display:inline-block;padding:15px 40px;font-family:' + e.SERIF + ';font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:' + e.BUTTON_TEXT + ';text-decoration:none">Reply now</a>' +
+      '<td align="center" class="btn" bgcolor="' + e.TEXT + '" style="background:' + e.TEXT + ';border-radius:2px">' +
+        '<a href="' + replyUrl + '" class="btnt" style="display:inline-block;padding:15px 40px;font-family:' + e.SERIF + ';font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:' + e.CARD + ';text-decoration:none">Reply now</a>' +
       '</td></tr></table>' +
     '</td></tr>' +
-    para_('The password is on your invitation.', 14, '12px 6px 0', e.MUTED, true);
+    para_('The password is on your invitation.', 14, '12px 6px 0', 'mu', true);
 
   var inner =
     titleBlock_('Will you join us?') +
@@ -131,20 +145,22 @@ function titleBlock_(title) {
     ? '<tr><td align="center" style="padding:16px 0 0"><img src="' + e.IMAGES + 'posy-seal.png" width="96" height="96" alt="" style="display:block;border:0;outline:none;width:96px;height:96px"></td></tr>'
     : '<tr><td align="center" style="padding:18px 0 6px"><img src="' + e.IMAGES + 'knot.png" width="160" height="28" alt="" style="display:block;border:0;outline:none;width:160px;height:auto"></td></tr>';
   return emblem +
-    '<tr><td align="center" style="padding:14px 0 0;font-family:' + e.SERIF + ';font-size:28px;line-height:1.2;font-weight:normal;color:' + e.TEXT + '">' + esc_(title) + '</td></tr>' +
-    '<tr><td align="center" style="padding:8px 0 30px;font-family:' + e.SERIF + ';font-size:15px;line-height:1.5;font-style:italic;color:' + e.MUTED + '">Saturday 18 September 2027<br>Markree Castle, Co. Sligo</td></tr>';
+    '<tr><td align="center" class="tx" style="padding:14px 0 0;font-family:' + e.SERIF + ';font-size:28px;line-height:1.2;font-weight:normal;color:' + e.TEXT + '">' + esc_(title) + '</td></tr>' +
+    '<tr><td align="center" class="mu" style="padding:8px 0 30px;font-family:' + e.SERIF + ';font-size:15px;line-height:1.5;font-style:italic;color:' + e.MUTED + '">Saturday 18 September 2027<br>Markree Castle, Co. Sligo</td></tr>';
 }
 
-function para_(html, size, padding, color, italic) {
+/** One centred paragraph. tone: 'mu' for the muted colour, otherwise the main ink. */
+function para_(html, size, padding, tone, italic) {
   var e = EMAIL;
-  return '<tr><td align="center" style="padding:' + padding + ';font-family:' + e.SERIF + ';font-size:' + size + 'px;line-height:1.65;color:' + (color || e.TEXT) +
+  var cls = tone === 'mu' ? 'mu' : 'tx';
+  return '<tr><td align="center" class="' + cls + '" style="padding:' + padding + ';font-family:' + e.SERIF + ';font-size:' + size + 'px;line-height:1.65;color:' + (cls === 'mu' ? e.MUTED : e.TEXT) +
     (italic ? ';font-style:italic' : '') + '">' + html + '</td></tr>';
 }
 
 function signOff_(padding) {
   var e = EMAIL;
-  return '<tr><td align="center" style="padding:' + (padding || '30px 0 0') + ';font-family:' + e.SERIF + ';font-size:17px;line-height:1.5;color:' + e.TEXT + '">' +
-    'With love,<br><span style="font-size:22px">Hannah &amp; Lawrence</span></td></tr>';
+  return '<tr><td align="center" class="tx" style="padding:' + (padding || '30px 0 0') + ';font-family:' + e.SERIF + ';font-size:17px;line-height:1.5;color:' + e.TEXT + '">' +
+    'With love,<br><span class="tx" style="font-size:22px;color:' + e.TEXT + '">Hannah &amp; Lawrence</span></td></tr>';
 }
 
 /** The foot of the card: Fionn in his own small seal, under the sign-off. */
@@ -162,65 +178,87 @@ function cornerPosy_() {
 }
 
 /**
- * Attaches the card's images to the email itself, so they show straight away
- * instead of waiting behind "show images". Falls back to the web address if an image can't be fetched.
+ * Attaches the card's images to the email itself, so they always show straight away
+ * instead of waiting behind "show images". Only if an image can't be fetched at all
+ * does the email fall back to its web address.
  */
 function inlineImages_(html) {
   var images = {};
   html = html.replace(/https:\/\/hannahandlawrence\.(?:wedding|com)\/email\/([\w-]+)\.png/g, function (url, name) {
     var blob = emailImage_(name);
-    if (!blob) return url;
+    if (!blob) { console.error('Could not attach ' + name + '.png'); return url; }
     images[name] = blob;
     return 'cid:' + name;
   });
   return { html: html, images: images };
 }
 
+/** Fetches an email image, keeping a copy for 6 hours. A storage problem never stops the image being attached. */
 function emailImage_(name) {
-  try {
-    var cache = CacheService.getScriptCache(), key = 'img3_' + name;
-    var b64 = cache.get(key);
-    if (!b64) {
-      var sources = [EMAIL.IMAGES, EMAIL.IMAGES_BACKUP], res = null;
-      for (var i = 0; i < sources.length && !b64; i++) {
-        try { res = UrlFetchApp.fetch(sources[i] + name + '.png', { muteHttpExceptions: true, followRedirects: true }); } catch (err) { res = null; }
-        if (res && res.getResponseCode() === 200 && /png/i.test(String(res.getHeaders()['Content-Type'] || 'png'))) b64 = Utilities.base64Encode(res.getContent());
-      }
-      if (!b64) return null;
-      cache.put(key, b64, 21600);
+  var key = 'img4_' + name, b64 = null, cache = null;
+  try { cache = CacheService.getScriptCache(); b64 = cache.get(key); } catch (e) { b64 = null; }
+  if (!b64) {
+    var sources = [EMAIL.IMAGES, EMAIL.IMAGES_BACKUP];
+    for (var i = 0; i < sources.length && !b64; i++) {
+      try {
+        var res = UrlFetchApp.fetch(sources[i] + name + '.png', { muteHttpExceptions: true, followRedirects: true });
+        if (res.getResponseCode() === 200 && /png/i.test(String(res.getHeaders()['Content-Type'] || 'png'))) b64 = Utilities.base64Encode(res.getContent());
+      } catch (e) { /* try the next source */ }
     }
-    return Utilities.newBlob(Utilities.base64Decode(b64), 'image/png', name + '.png');
-  } catch (e) { console.error(e); return null; }
+    if (!b64) return null;
+    try { if (cache && b64.length < 95000) cache.put(key, b64, 21600); } catch (e) { /* not stored, still attached */ }
+  }
+  try { return Utilities.newBlob(Utilities.base64Decode(b64), 'image/png', name + '.png'); }
+  catch (e) { console.error(e); return null; }
 }
 
-/** The card every email sits in: bottle green, inside a fine double gold rule, on deeper green. */
+/** Dark-mode styles: Apple Mail via the media query, Outlook via its data-ogsc / data-ogsb markers. */
+function darkCss_() {
+  var e = EMAIL;
+  var rules =
+    '.sur{background:' + e.D_SURROUND + ' !important;background-color:' + e.D_SURROUND + ' !important}' +
+    '.card{background:' + e.D_CARD + ' !important;background-color:' + e.D_CARD + ' !important;border-color:' + e.D_GOLD + ' !important}' +
+    '.ring{border-color:' + e.D_GOLD + ' !important}' +
+    '.tx{color:' + e.D_TEXT + ' !important}' +
+    '.mu{color:' + e.D_MUTED + ' !important}' +
+    '.gd{color:' + e.D_GOLD + ' !important}' +
+    '.rl{border-color:' + e.D_RULE + ' !important}' +
+    '.btn{background:' + e.D_GOLD + ' !important;background-color:' + e.D_GOLD + ' !important}' +
+    '.btnt{color:' + e.D_BUTTON_TEXT + ' !important}';
+  // Outlook: the same rules, scoped to the markers it adds when it recolours an element.
+  var outlook = rules.replace(/\.(sur|card|btn)\{/g, '[data-ogsb] .$1{').replace(/\.(ring|tx|mu|gd|rl|btnt)\{/g, '[data-ogsc] .$1{');
+  return '@media (prefers-color-scheme:dark){' + rules + '}' + outlook;
+}
+
+/** The card every email sits in: ivory (or bottle green in dark mode), inside a fine double gold rule. */
 function emailShell_(inner, preheader, footer) {
   var e = EMAIL;
   return '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">' +
     '<meta name="viewport" content="width=device-width,initial-scale=1">' +
-    '<meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only">' +
-    '<style>:root{color-scheme:light only}body{margin:0;padding:0}a{color:' + e.TEXT + '}' +
-    '@media (min-width:600px){.outer{padding:44px 20px !important}.inner{padding-left:34px !important;padding-right:34px !important}}</style></head>' +
-    '<body style="margin:0;padding:0;background:' + e.SURROUND + '">' +
+    '<meta name="color-scheme" content="light dark"><meta name="supported-color-schemes" content="light dark">' +
+    '<style>:root{color-scheme:light dark;supported-color-schemes:light dark}body{margin:0;padding:0}' +
+    '@media (min-width:600px){.outer{padding:44px 20px !important}.inner{padding-left:34px !important;padding-right:34px !important}}' +
+    darkCss_() + '</style></head>' +
+    '<body class="sur" style="margin:0;padding:0;background:' + e.SURROUND + '">' +
     '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:' + e.SURROUND + '">' + esc_(preheader || '') + '&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>' +
-    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="' + e.SURROUND + '" style="background:' + e.SURROUND + '"><tr>' +
-    '<td align="center" class="outer" style="padding:28px 12px">' +
-      // the card: outer gold rule, a sliver of ivory, inner gold rule
-      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="' + e.CARD + '" style="max-width:480px;background:' + e.CARD + ';border:1px solid ' + e.GOLD + ';border-radius:16px"><tr><td style="padding:5px">' +
-      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ' + e.GOLD + ';border-radius:12px">' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="sur" bgcolor="' + e.SURROUND + '" style="background:' + e.SURROUND + '"><tr>' +
+    '<td align="center" class="outer sur" style="padding:28px 12px;background:' + e.SURROUND + '">' +
+      // the card: outer gold rule, a sliver of card colour, inner gold rule
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="card" bgcolor="' + e.CARD + '" style="max-width:480px;background:' + e.CARD + ';border:1px solid ' + e.GOLD + ';border-radius:16px"><tr><td style="padding:5px">' +
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="ring" style="border:1px solid ' + e.GOLD + ';border-radius:12px">' +
       cornerPosy_() +
       '<tr><td align="center" class="inner" style="padding:' + (e.FLOWERS === 'corner' ? '0' : '30px') + ' 22px 0">' +
         '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' +
-        '<tr><td align="center" style="font-family:' + e.SERIF + ';font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:' + e.GOLD + '">Hannah &amp; Lawrence</td></tr>' +
+        '<tr><td align="center" class="gd" style="font-family:' + e.SERIF + ';font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:' + e.GOLD + '">Hannah &amp; Lawrence</td></tr>' +
         inner +
         '</table>' +
       '</td></tr>' +
       cardFoot_() +
       '</table>' +
       '</td></tr></table>' +
-      // small print, outside the card
+      // small print, outside the card (on green in both modes)
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px"><tr>' +
-      '<td align="center" style="padding:22px 10px 0;font-family:' + e.SERIF + ';font-size:13px;line-height:1.6;color:' + e.ON_GREEN + '">' + footer.replace(/color:#F3EDDD/g, 'color:' + e.TEXT) + '</td></tr>' +
+      '<td align="center" style="padding:22px 10px 0;font-family:' + e.SERIF + ';font-size:13px;line-height:1.6;color:' + e.ON_GREEN + '">' + footer + '</td></tr>' +
       '<tr><td align="center" style="padding:12px 0 0;font-family:' + e.SERIF + ';font-size:12px;letter-spacing:.1em;color:' + e.ON_GREEN + '"><a href="' + CONFIG.SITE + '" style="color:' + e.ON_GREEN + ';text-decoration:none">' + CONFIG.SITE.replace(/^https?:\/\//, '') + '</a></td></tr>' +
       '</table>' +
     '</td></tr></table></body></html>';

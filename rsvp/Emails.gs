@@ -76,7 +76,7 @@ function confirmationEmail(info) {
   ].concat(rows.map(function (r) { return '  ' + r.name + ': ' + r.status.toLowerCase() + (r.extra ? ', plus ' + r.extra.replace(/ too$/, '') : ''); }),
     [''], body ? [body, ''] : [], info.printed ? [POSTED_LINE, ''] : [],
     ['With love,', 'Hannah & Lawrence', '',
-     'Plans change? You can update your reply until 1 March 2027 at ' + replyUrl + ' (the password is on your invitation).']).join('\n');
+     'Plans change? You can update your reply until 1 March 2027 at ' + replyUrl + '.']).join('\n');
 
   var e = EMAIL;
   var rowHtml = rows.map(function (r) {
@@ -99,7 +99,7 @@ function confirmationEmail(info) {
     (info.printed ? para_(esc_(POSTED_LINE), 16, '16px 6px 0', 'mu', true) : '') +
     signOff_();
 
-  var footer = 'Plans change? <a href="' + replyUrl + '" style="color:' + e.LINK_ON_GREEN + '">Update your reply</a> until 1&nbsp;March&nbsp;2027.<br>The password is on your invitation.';
+  var footer = 'Plans change? <a href="' + replyUrl + '" style="color:' + e.LINK_ON_GREEN + '">Update your reply</a> until 1&nbsp;March&nbsp;2027.';
   return { subject: subject, text: text, html: emailShell_(inner, preheader, footer) };
 }
 
@@ -113,7 +113,7 @@ function reminderEmail(firstNames) {
   var opening = 'We’d love to know whether you can join us at Markree Castle. Replies close on 1 March, and it only takes a minute.';
 
   var text = ['Dear ' + names + ',', '', opening, '',
-    'Reply here: ' + replyUrl + ' (the password is on your invitation).', '',
+    'Reply here: ' + replyUrl, '',
     'With love,', 'Hannah & Lawrence', '',
     'If you’ve already let us know another way, thank you, and please ignore this.'].join('\n');
 
@@ -123,8 +123,7 @@ function reminderEmail(firstNames) {
       '<td align="center" class="btn" bgcolor="' + e.TEXT + '" style="background:' + e.TEXT + ';border-radius:2px">' +
         '<a href="' + replyUrl + '" class="btnt" style="display:inline-block;padding:15px 40px;font-family:' + e.SERIF + ';font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:' + e.CARD + ';text-decoration:none">Reply now</a>' +
       '</td></tr></table>' +
-    '</td></tr>' +
-    para_('The password is on your invitation.', 14, '12px 6px 0', 'mu', true);
+    '</td></tr>';
 
   var inner =
     titleBlock_('Will you join us?') +

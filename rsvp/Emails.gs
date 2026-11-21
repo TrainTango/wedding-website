@@ -141,8 +141,13 @@ function reminderEmail(firstNames) {
 
 function titleBlock_(title) {
   var e = EMAIL;
+  // Light mode: the posy on its own. Dark mode: the posy in an ivory seal, so its dark outlines still show.
+  // (The text colour on this cell lets Outlook mark it, so the dark-mode swap works there too.)
   var emblem = e.FLOWERS === 'crest'
-    ? '<tr><td align="center" style="padding:16px 0 0"><img src="' + e.IMAGES + 'posy-seal.png" width="96" height="96" alt="" style="display:block;border:0;outline:none;width:96px;height:96px"></td></tr>'
+    ? '<tr><td align="center" class="tx" style="padding:16px 0 0;color:' + e.TEXT + '">' +
+        '<img class="lt" src="' + e.IMAGES + 'posy-light.png" width="96" height="96" alt="" style="display:block;border:0;outline:none;width:96px;height:96px">' +
+        '<img class="dk" src="' + e.IMAGES + 'posy-seal.png" width="96" height="96" alt="" style="display:none;border:0;outline:none;width:96px;height:96px">' +
+      '</td></tr>'
     : '<tr><td align="center" style="padding:18px 0 6px"><img src="' + e.IMAGES + 'knot.png" width="160" height="28" alt="" style="display:block;border:0;outline:none;width:160px;height:auto"></td></tr>';
   return emblem +
     '<tr><td align="center" class="tx" style="padding:14px 0 0;font-family:' + e.SERIF + ';font-size:28px;line-height:1.2;font-weight:normal;color:' + e.TEXT + '">' + esc_(title) + '</td></tr>' +
@@ -163,10 +168,10 @@ function signOff_(padding) {
     'With love,<br><span class="tx" style="font-size:22px;color:' + e.TEXT + '">Hannah &amp; Lawrence</span></td></tr>';
 }
 
-/** The foot of the card: Fionn in his own small seal, under the sign-off. */
+/** The foot of the card: Fionn, drawn in gold so he reads on ivory and on green, under the sign-off. */
 function cardFoot_() {
   var e = EMAIL;
-  return '<tr><td align="center" style="padding:24px 0 28px"><img src="' + e.IMAGES + 'fionn-seal.png" width="84" height="84" alt="Fionn, Markree’s wolfhound" ' +
+  return '<tr><td align="center" style="padding:24px 0 28px"><img src="' + e.IMAGES + 'fionn-gold.png" width="84" height="84" alt="Fionn, Markree’s wolfhound" ' +
     'style="display:block;border:0;outline:none;width:84px;height:84px;font-family:' + e.SERIF + ';font-size:12px;font-style:italic;color:' + e.MUTED + '"></td></tr>';
 }
 
@@ -224,9 +229,11 @@ function darkCss_() {
     '.gd{color:' + e.D_GOLD + ' !important}' +
     '.rl{border-color:' + e.D_RULE + ' !important}' +
     '.btn{background:' + e.D_GOLD + ' !important;background-color:' + e.D_GOLD + ' !important}' +
-    '.btnt{color:' + e.D_BUTTON_TEXT + ' !important}';
+    '.btnt{color:' + e.D_BUTTON_TEXT + ' !important}' +
+    '.lt{display:none !important}' +
+    '.dk{display:block !important}';
   // Outlook: the same rules, scoped to the markers it adds when it recolours an element.
-  var outlook = rules.replace(/\.(sur|card|btn)\{/g, '[data-ogsb] .$1{').replace(/\.(ring|tx|mu|gd|rl|btnt)\{/g, '[data-ogsc] .$1{');
+  var outlook = rules.replace(/\.(sur|card|btn)\{/g, '[data-ogsb] .$1{').replace(/\.(ring|tx|mu|gd|rl|btnt|lt|dk)\{/g, '[data-ogsc] .$1{');
   return '@media (prefers-color-scheme:dark){' + rules + '}' + outlook;
 }
 
